@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -50,6 +50,10 @@
 		0AA5BC1C2F571454002A00D7 /* FortuneTellAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneTellAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E7EF77F62F57152F00CF30DB /* HomePage */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HomePage; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		0AA5BBF42F571452002A00D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -78,6 +82,7 @@
 		0AA5BBEE2F571452002A00D7 = {
 			isa = PBXGroup;
 			children = (
+				E7EF77F62F57152F00CF30DB /* HomePage */,
 				0AA5BBF92F571452002A00D7 /* FortuneTellApp */,
 				0AA5BC0F2F571454002A00D7 /* FortuneTellAppTests */,
 				0AA5BC192F571454002A00D7 /* FortuneTellAppUITests */,

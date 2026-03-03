@@ -16,6 +16,7 @@
 		0A1DBDBE2F5716E100EE9C66 /* FortuneeTellAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDBD2F5716E100EE9C66 /* FortuneeTellAppTests.swift */; };
 		0A1DBDC82F5716E100EE9C66 /* FortuneeTellAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */; };
 		0A1DBDCA2F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */; };
+		E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EF77F92F57179500CF30DB /* deneme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +49,8 @@
 		0A1DBDC32F5716E100EE9C66 /* FortuneeTellAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FortuneeTellAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITests.swift; sourceTree = "<group>"; };
 		0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		E7EF77F82F57178600CF30DB /* .swift */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swift; sourceTree = "<group>"; };
+		E7EF77F92F57179500CF30DB /* deneme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deneme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +101,8 @@
 		0A1DBDA62F5716DF00EE9C66 /* FortuneeTellApp */ = {
 			isa = PBXGroup;
 			children = (
+				E7EF77F92F57179500CF30DB /* deneme.swift */,
+				E7EF77F82F57178600CF30DB /* .swift */,
 				0A1DBDA72F5716DF00EE9C66 /* FortuneeTellAppApp.swift */,
 				0A1DBDA92F5716DF00EE9C66 /* ContentView.swift */,
 				0A1DBDAB2F5716E100EE9C66 /* Assets.xcassets */,
@@ -265,6 +270,7 @@
 			files = (
 				0A1DBDB12F5716E100EE9C66 /* Persistence.swift in Sources */,
 				0A1DBDAA2F5716DF00EE9C66 /* ContentView.swift in Sources */,
+				E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */,
 				0A1DBDB42F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld in Sources */,
 				0A1DBDA82F5716DF00EE9C66 /* FortuneeTellAppApp.swift in Sources */,
 			);

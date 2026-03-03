@@ -1,6 +1,6 @@
 //
 //  Persistence.swift
-//  FortuneTellApp
+//  FortuneeTellApp
 //
 //  Created by Deniz Metin on 3.03.2026.
 //
@@ -31,7 +31,7 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "FortuneTellApp")
+        container = NSPersistentContainer(name: "FortuneeTellApp")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }

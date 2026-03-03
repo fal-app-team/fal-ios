@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  FortuneTellApp
+//  FortuneeTellApp
 //
 //  Created by Deniz Metin on 3.03.2026.
 //

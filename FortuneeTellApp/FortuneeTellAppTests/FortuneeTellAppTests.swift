@@ -1,14 +1,14 @@
 //
-//  FortuneTellAppTests.swift
-//  FortuneTellAppTests
+//  FortuneeTellAppTests.swift
+//  FortuneeTellAppTests
 //
 //  Created by Deniz Metin on 3.03.2026.
 //
 
 import XCTest
-@testable import FortuneTellApp
+@testable import FortuneeTellApp
 
-final class FortuneTellAppTests: XCTestCase {
+final class FortuneeTellAppTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

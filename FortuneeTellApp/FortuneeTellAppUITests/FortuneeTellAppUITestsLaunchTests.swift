@@ -1,13 +1,13 @@
 //
-//  FortuneTellAppUITestsLaunchTests.swift
-//  FortuneTellAppUITests
+//  FortuneeTellAppUITestsLaunchTests.swift
+//  FortuneeTellAppUITests
 //
 //  Created by Deniz Metin on 3.03.2026.
 //
 
 import XCTest
 
-final class FortuneTellAppUITestsLaunchTests: XCTestCase {
+final class FortuneeTellAppUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

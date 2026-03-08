@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,7 +16,8 @@
 		0A1DBDBE2F5716E100EE9C66 /* FortuneeTellAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDBD2F5716E100EE9C66 /* FortuneeTellAppTests.swift */; };
 		0A1DBDC82F5716E100EE9C66 /* FortuneeTellAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */; };
 		0A1DBDCA2F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */; };
-		E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EF77F92F57179500CF30DB /* deneme.swift */; };
+		E720739B2F5C605200D73D78 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E720739A2F5C605200D73D78 /* Lottie */; };
+		E720739D2F5C605200D73D78 /* Lottie-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = E720739C2F5C605200D73D78 /* Lottie-Dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,14 +51,19 @@
 		0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITests.swift; sourceTree = "<group>"; };
 		0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		E7EF77F82F57178600CF30DB /* .swift */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swift; sourceTree = "<group>"; };
-		E7EF77F92F57179500CF30DB /* deneme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deneme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E74014A32F5849F6002DB7D9 /* Onboarding */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Onboarding; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0A1DBDA12F5716DF00EE9C66 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E720739B2F5C605200D73D78 /* Lottie in Frameworks */,
+				E720739D2F5C605200D73D78 /* Lottie-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +107,7 @@
 		0A1DBDA62F5716DF00EE9C66 /* FortuneeTellApp */ = {
 			isa = PBXGroup;
 			children = (
-				E7EF77F92F57179500CF30DB /* deneme.swift */,
+				E74014A32F5849F6002DB7D9 /* Onboarding */,
 				E7EF77F82F57178600CF30DB /* .swift */,
 				0A1DBDA72F5716DF00EE9C66 /* FortuneeTellAppApp.swift */,
 				0A1DBDA92F5716DF00EE9C66 /* ContentView.swift */,
@@ -152,6 +158,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E74014A32F5849F6002DB7D9 /* Onboarding */,
 			);
 			name = FortuneeTellApp;
 			productName = FortuneeTellApp;
@@ -226,6 +235,9 @@
 				Base,
 			);
 			mainGroup = 0A1DBD9B2F5716DF00EE9C66;
+			packageReferences = (
+				E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			productRefGroup = 0A1DBDA52F5716DF00EE9C66 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -270,7 +282,6 @@
 			files = (
 				0A1DBDB12F5716E100EE9C66 /* Persistence.swift in Sources */,
 				0A1DBDAA2F5716DF00EE9C66 /* ContentView.swift in Sources */,
-				E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */,
 				0A1DBDB42F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld in Sources */,
 				0A1DBDA82F5716DF00EE9C66 /* FortuneeTellAppApp.swift in Sources */,
 			);
@@ -596,6 +607,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E720739A2F5C605200D73D78 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+		E720739C2F5C605200D73D78 /* Lottie-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = "Lottie-Dynamic";
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		0A1DBDB22F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld */ = {

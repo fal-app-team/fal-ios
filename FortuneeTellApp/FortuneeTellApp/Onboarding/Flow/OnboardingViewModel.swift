@@ -40,6 +40,7 @@ final class OnboardingViewModel: ObservableObject {
         case 2: return gender != nil
         case 3: return relationship != nil
         case 4: return work != nil
+        case 5: return true
         default: return false
         }
     }

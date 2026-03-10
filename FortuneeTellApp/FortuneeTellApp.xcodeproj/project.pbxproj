@@ -16,8 +16,6 @@
 		0A1DBDBE2F5716E100EE9C66 /* FortuneeTellAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDBD2F5716E100EE9C66 /* FortuneeTellAppTests.swift */; };
 		0A1DBDC82F5716E100EE9C66 /* FortuneeTellAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */; };
 		0A1DBDCA2F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */; };
-		E720739B2F5C605200D73D78 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = E720739A2F5C605200D73D78 /* Lottie */; };
-		E720739D2F5C605200D73D78 /* Lottie-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = E720739C2F5C605200D73D78 /* Lottie-Dynamic */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,8 +60,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E720739B2F5C605200D73D78 /* Lottie in Frameworks */,
-				E720739D2F5C605200D73D78 /* Lottie-Dynamic in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,7 +232,6 @@
 			);
 			mainGroup = 0A1DBD9B2F5716DF00EE9C66;
 			packageReferences = (
-				E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			productRefGroup = 0A1DBDA52F5716DF00EE9C66 /* Products */;
 			projectDirPath = "";
@@ -607,30 +602,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.6.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		E720739A2F5C605200D73D78 /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
-		};
-		E720739C2F5C605200D73D78 /* Lottie-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = E72073992F5C605100D73D78 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = "Lottie-Dynamic";
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		0A1DBDB22F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld */ = {

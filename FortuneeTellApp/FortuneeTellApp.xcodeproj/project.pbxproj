@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1C343F2F58783C003BFECA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0A1C343E2F58783C003BFECA /* GoogleService-Info.plist */; };
 		0A1DBDA82F5716DF00EE9C66 /* FortuneeTellAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDA72F5716DF00EE9C66 /* FortuneeTellAppApp.swift */; };
 		0A1DBDAA2F5716DF00EE9C66 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDA92F5716DF00EE9C66 /* ContentView.swift */; };
 		0A1DBDAC2F5716E100EE9C66 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A1DBDAB2F5716E100EE9C66 /* Assets.xcassets */; };
@@ -16,7 +17,8 @@
 		0A1DBDBE2F5716E100EE9C66 /* FortuneeTellAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDBD2F5716E100EE9C66 /* FortuneeTellAppTests.swift */; };
 		0A1DBDC82F5716E100EE9C66 /* FortuneeTellAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */; };
 		0A1DBDCA2F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */; };
-		E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EF77F92F57179500CF30DB /* deneme.swift */; };
+		0A413D332F607D2600A21CE3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A413D322F607D2600A21CE3 /* Assets.xcassets */; };
+		FC5F37C4959AC7D398F2FB14 /* Pods_FortuneeTellApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5728F85B508D619FA32714F5 /* Pods_FortuneeTellApp.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0A1C343E2F58783C003BFECA /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		0A1C34402F58788B003BFECA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0A1DBDA42F5716DF00EE9C66 /* FortuneeTellApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FortuneeTellApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1DBDA72F5716DF00EE9C66 /* FortuneeTellAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppApp.swift; sourceTree = "<group>"; };
 		0A1DBDA92F5716DF00EE9C66 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -49,8 +53,12 @@
 		0A1DBDC32F5716E100EE9C66 /* FortuneeTellAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FortuneeTellAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A1DBDC72F5716E100EE9C66 /* FortuneeTellAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITests.swift; sourceTree = "<group>"; };
 		0A1DBDC92F5716E100EE9C66 /* FortuneeTellAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortuneeTellAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0A413D322F607D2600A21CE3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0AC7ED6C2F5C432C00F7892E /* FortuneeTellApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FortuneeTellApp.entitlements; sourceTree = "<group>"; };
+		2963A996970FB247108BAB3D /* Pods-FortuneeTellApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FortuneeTellApp.release.xcconfig"; path = "Target Support Files/Pods-FortuneeTellApp/Pods-FortuneeTellApp.release.xcconfig"; sourceTree = "<group>"; };
+		5728F85B508D619FA32714F5 /* Pods_FortuneeTellApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FortuneeTellApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		90CF5A22110158104F00145D /* Pods-FortuneeTellApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FortuneeTellApp.debug.xcconfig"; path = "Target Support Files/Pods-FortuneeTellApp/Pods-FortuneeTellApp.debug.xcconfig"; sourceTree = "<group>"; };
 		E7EF77F82F57178600CF30DB /* .swift */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swift; sourceTree = "<group>"; };
-		E7EF77F92F57179500CF30DB /* deneme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deneme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC5F37C4959AC7D398F2FB14 /* Pods_FortuneeTellApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,10 +90,14 @@
 		0A1DBD9B2F5716DF00EE9C66 = {
 			isa = PBXGroup;
 			children = (
+				0A413D322F607D2600A21CE3 /* Assets.xcassets */,
+				0A1C343E2F58783C003BFECA /* GoogleService-Info.plist */,
 				0A1DBDA62F5716DF00EE9C66 /* FortuneeTellApp */,
 				0A1DBDBC2F5716E100EE9C66 /* FortuneeTellAppTests */,
 				0A1DBDC62F5716E100EE9C66 /* FortuneeTellAppUITests */,
 				0A1DBDA52F5716DF00EE9C66 /* Products */,
+				4070A2729AD0EA50DAD96A72 /* Pods */,
+				93403FF4B65B078D81124B95 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,7 +114,8 @@
 		0A1DBDA62F5716DF00EE9C66 /* FortuneeTellApp */ = {
 			isa = PBXGroup;
 			children = (
-				E7EF77F92F57179500CF30DB /* deneme.swift */,
+				0AC7ED6C2F5C432C00F7892E /* FortuneeTellApp.entitlements */,
+				0A1C34402F58788B003BFECA /* Info.plist */,
 				E7EF77F82F57178600CF30DB /* .swift */,
 				0A1DBDA72F5716DF00EE9C66 /* FortuneeTellAppApp.swift */,
 				0A1DBDA92F5716DF00EE9C66 /* ContentView.swift */,
@@ -138,6 +152,23 @@
 			path = FortuneeTellAppUITests;
 			sourceTree = "<group>";
 		};
+		4070A2729AD0EA50DAD96A72 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				90CF5A22110158104F00145D /* Pods-FortuneeTellApp.debug.xcconfig */,
+				2963A996970FB247108BAB3D /* Pods-FortuneeTellApp.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		93403FF4B65B078D81124B95 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5728F85B508D619FA32714F5 /* Pods_FortuneeTellApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -145,9 +176,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0A1DBDCD2F5716E100EE9C66 /* Build configuration list for PBXNativeTarget "FortuneeTellApp" */;
 			buildPhases = (
+				2CCFD94D7B83B89B0093EA5D /* [CP] Check Pods Manifest.lock */,
 				0A1DBDA02F5716DF00EE9C66 /* Sources */,
 				0A1DBDA12F5716DF00EE9C66 /* Frameworks */,
 				0A1DBDA22F5716DF00EE9C66 /* Resources */,
+				331E83304959BB3ED0F5AF54 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -244,6 +277,8 @@
 			files = (
 				0A1DBDAF2F5716E100EE9C66 /* Preview Assets.xcassets in Resources */,
 				0A1DBDAC2F5716E100EE9C66 /* Assets.xcassets in Resources */,
+				0A413D332F607D2600A21CE3 /* Assets.xcassets in Resources */,
+				0A1C343F2F58783C003BFECA /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +298,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2CCFD94D7B83B89B0093EA5D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FortuneeTellApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		331E83304959BB3ED0F5AF54 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FortuneeTellApp/Pods-FortuneeTellApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FortuneeTellApp/Pods-FortuneeTellApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FortuneeTellApp/Pods-FortuneeTellApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		0A1DBDA02F5716DF00EE9C66 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -270,7 +347,6 @@
 			files = (
 				0A1DBDB12F5716E100EE9C66 /* Persistence.swift in Sources */,
 				0A1DBDAA2F5716DF00EE9C66 /* ContentView.swift in Sources */,
-				E7EF77FA2F57179900CF30DB /* deneme.swift in Sources */,
 				0A1DBDB42F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld in Sources */,
 				0A1DBDA82F5716DF00EE9C66 /* FortuneeTellAppApp.swift in Sources */,
 			);
@@ -430,14 +506,19 @@
 		};
 		0A1DBDCE2F5716E100EE9C66 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 90CF5A22110158104F00145D /* Pods-FortuneeTellApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FortuneeTellApp/FortuneeTellApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FortuneeTellApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JFF37L88VX;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FortuneeTellApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -458,14 +539,19 @@
 		};
 		0A1DBDCF2F5716E100EE9C66 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2963A996970FB247108BAB3D /* Pods-FortuneeTellApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = FortuneeTellApp/FortuneeTellApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FortuneeTellApp/Preview Content\"";
+				DEVELOPMENT_TEAM = JFF37L88VX;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FortuneeTellApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

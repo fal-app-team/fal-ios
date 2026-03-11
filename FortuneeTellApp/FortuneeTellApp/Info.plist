@@ -7,13 +7,16 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
+			<key>CFBundleURLName</key>
+			<string>com.googleusercontent.apps</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.288492290908-p6o7rkmovoomspfqaklk9cmvs5efvk92</string>
 			</array>
 		</dict>
+		<dict/>
 	</array>
-	<key>GIDClientID</key>
-	<string>288492290908-p6o7rkmovoomspfqaklk9cmvs5efvk92.apps.googleusercontent.com</string>
 </dict>
 </plist>

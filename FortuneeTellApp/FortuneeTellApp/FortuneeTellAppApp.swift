@@ -1,20 +1,16 @@
-//
-//  FortuneeTellAppApp.swift
-//  FortuneeTellApp
-//
-//  Created by Deniz Metin on 3.03.2026.
-//
-
 import SwiftUI
+import FirebaseCore
 
 @main
 struct FortuneeTellAppApp: App {
-    let persistenceController = PersistenceController.shared
+
+    init() {
+        FirebaseApp.configure()
+    }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
 }

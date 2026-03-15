@@ -2,11 +2,15 @@ import SwiftUI
 
 struct OnboardingFlowView: View {
     @StateObject private var vm = OnboardingViewModel()
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
     func goNext() {
         if vm.step < 5 && vm.canGoNext(step: vm.step) {
             withAnimation {
                 vm.step += 1
             }
+        } else if vm.step == 5 {
+            hasCompletedOnboarding = true
         }
     }
 
@@ -44,14 +48,14 @@ struct OnboardingFlowView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
-            
+
                 ZStack {
                     switch vm.step {
                     case 0:
                         NameStepView(name: $vm.name) {
                             goNext()
                         }
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
 
                     case 1:
                         BirthDateStepView(birthDate: $vm.birthDate)
@@ -68,6 +72,7 @@ struct OnboardingFlowView: View {
                     case 4:
                         WorkStepView(selected: $vm.work)
                             .transition(.move(edge: .trailing).combined(with: .opacity))
+
                     case 5:
                         WelcomeStepView()
                             .transition(.move(edge: .trailing).combined(with: .opacity))
@@ -84,12 +89,13 @@ struct OnboardingFlowView: View {
                     title: vm.step == 5 ? "Falına Başla" : "Devam",
                     isEnabled: vm.canGoNext(step: vm.step)
                 ) {
-                        if vm.step < 5 {
+                    if vm.step < 5 {
+                        withAnimation {
                             vm.step += 1
-                        } else {
-                            print("Onboarding bitti")
                         }
-                    
+                    } else {
+                        hasCompletedOnboarding = true
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)

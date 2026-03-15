@@ -60,6 +60,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E74014A32F5849F6002DB7D9 /* Onboarding */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Onboarding; sourceTree = "<group>"; };
+		E747781F2F674ABC00FA912C /* Home */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Home; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -124,6 +125,7 @@
 				0A1DBDB02F5716E100EE9C66 /* Persistence.swift */,
 				0A1DBDB22F5716E100EE9C66 /* FortuneeTellApp.xcdatamodeld */,
 				0A1DBDAD2F5716E100EE9C66 /* Preview Content */,
+				E747781F2F674ABC00FA912C /* Home */,
 			);
 			path = FortuneeTellApp;
 			sourceTree = "<group>";
@@ -170,6 +172,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E74014A32F5849F6002DB7D9 /* Onboarding */,
+				E747781F2F674ABC00FA912C /* Home */,
 			);
 			name = FortuneeTellApp;
 			productName = FortuneeTellApp;

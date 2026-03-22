@@ -7,45 +7,39 @@ struct FortuneCategoryCard: View {
     let gradientColors: [Color]
 
     var body: some View {
-        Button {
-            print("\(title) seçildi")
-        } label: {
-            HStack(spacing: 18) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 22)
-                        .fill(
-                            LinearGradient(
-                                colors: gradientColors,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
+        HStack(spacing: 18) {
+                    ZStack {
+                        LinearGradient(
+                            colors: gradientColors,
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
                         )
                         .frame(width: 100, height: 100)
+                        .clipShape(RoundedRectangle(cornerRadius: 22))
 
-                    Image(systemName: icon)
-                        .font(.system(size: 36, weight: .medium))
-                        .foregroundStyle(.white)
+                        Image(systemName: icon)
+                            .font(.system(size: 36, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(title)
+                            .font(.system(size: 21, weight: .semibold))
+                            .foregroundColor(.blue)
+
+                        Text(subtitle)
+                            .font(.system(size: 16))
+                            .foregroundColor(.gray)
+                    }
+
+                    Spacer()
                 }
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(title)
-                        .font(.system(size: 21, weight: .bold))
-                        .foregroundStyle(Color(.label))
-
-                    Text(subtitle)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(.gray)
-                        .multilineTextAlignment(.leading)
-                }
-
-                Spacer()
-            }
-            .padding(20)
-            .background(Color.white.opacity(0.95))
-            .clipShape(RoundedRectangle(cornerRadius: 28))
-            .shadow(color: .black.opacity(0.07), radius: 12, x: 0, y: 6)
-        }
-        .buttonStyle(.plain)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(Color.white)
+                .clipShape(RoundedRectangle(cornerRadius: 22))
+                .shadow(color: .black.opacity(0.04), radius: 6, x: 0, y: 3)
+                .contentShape(Rectangle())
     }
 }
 

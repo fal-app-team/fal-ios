@@ -7,43 +7,29 @@ struct StatCardView: View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Toplam Falın")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundColor(.white.opacity(0.8))
 
                 Text("\(totalFortunes)")
-                    .font(.system(size: 44, weight: .bold))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundColor(.white)
             }
 
             Spacer()
 
-            ZStack {
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(Color.white.opacity(0.20))
-                    .frame(width: 82, height: 82)
-
-                Image(systemName: "arrow.up.right")
-                    .font(.system(size: 28, weight: .medium))
-                    .foregroundStyle(.white)
-            }
+            Image(systemName: "arrow.up.right")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.white.opacity(0.2))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .padding(28)
+        .padding()
         .background(
             LinearGradient(
-                colors: [
-                    Color(red: 0.63, green: 0.17, blue: 0.95),
-                    Color(red: 0.93, green: 0.00, blue: 0.47)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                colors: [Color.purple, Color.pink],
+                startPoint: .leading,
+                endPoint: .trailing
             )
         )
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .shadow(color: .purple.opacity(0.18), radius: 16, x: 0, y: 10)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-}
-
-#Preview {
-    StatCardView(totalFortunes: 0)
-        .padding()
 }

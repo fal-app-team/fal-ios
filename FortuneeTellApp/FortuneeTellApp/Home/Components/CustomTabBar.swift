@@ -2,18 +2,14 @@ import SwiftUI
 
 enum TabItem: String, CaseIterable {
     case home = "Ana Sayfa"
-    case coffee = "Kahve"
-    case tarot = "Tarot"
-    case dream = "Rüya"
     case history = "Geçmiş"
+    case profil = "Profil"
 
     var icon: String {
         switch self {
         case .home: return "house"
-        case .coffee: return "cup.and.saucer"
-        case .tarot: return "sparkles"
-        case .dream: return "moon"
         case .history: return "clock.arrow.circlepath"
+        case .profil: return "person.circle"
         }
     }
 }

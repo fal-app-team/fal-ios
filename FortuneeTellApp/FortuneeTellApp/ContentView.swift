@@ -7,7 +7,6 @@ struct ContentView: View {
     
     
     @State private var isLoggedIn = false
-    //@State private var isLoggedIn = Auth.auth().currentUser != nil
     
     var body: some View {
             Group {
@@ -81,7 +80,7 @@ struct ContentView: View {
                                     Spacer()
                                         .frame(height: 26)
                                     
-                                    VStack(spacing: 18) {
+                                    VStack(spacing: 26) {
                                         
                                         VStack(spacing: 6) {
                                             Text("Hoş Geldin")
@@ -132,13 +131,13 @@ struct ContentView: View {
                                         .padding(.top, 2)
                                         
                                         NavigationLink {
-                                            EmailLoginView()
+                                            RegisterView()
                                         } label: {
                                             HStack(spacing: 12) {
                                                 Image(systemName: "envelope")
                                                     .font(.system(size: 18, weight: .semibold))
                                                 
-                                                Text("E-mail ile Devam Et")
+                                                Text("E-mail ile Kayıt Ol")
                                                     .font(.system(size: 18, weight: .bold))
                                             }
                                             .foregroundColor(.white)
@@ -157,19 +156,7 @@ struct ContentView: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 18))
                                             .shadow(color: .pink.opacity(0.30), radius: 14, x: 0, y: 8)
                                         }
-                                        
-                                        VStack(spacing: 10) {
-                                            HStack(spacing: 4) {
-                                                Text("Hesabın yok mu?")
-                                                    .foregroundColor(.white.opacity(0.68))
-                                                
-                                                NavigationLink("Kayıt Ol") {
-                                                    RegisterView()
-                                                }
-                                                .foregroundColor(.white)
-                                                .fontWeight(.bold)
-                                            }
-                                            
+                                                                                    
                                             HStack(spacing: 4) {
                                                 Text("Zaten hesabın var mı?")
                                                     .foregroundColor(.white.opacity(0.68))
@@ -180,7 +167,7 @@ struct ContentView: View {
                                                 .foregroundColor(.white)
                                                 .fontWeight(.bold)
                                             }
-                                        }
+                                        
                                         .font(.system(size: 15))
                                         .padding(.top, 4)
                                     }
@@ -295,27 +282,6 @@ struct StarsOverlay: View {
     }
 }
 
-// Geçici sayfalar
-struct EmailLoginView: View {
-    var body: some View {
-        Text("E-mail ile Devam Et Sayfası")
-            .navigationTitle("E-mail")
-    }
-}
-
-struct RegisterView: View {
-    var body: some View {
-        Text("Kayıt Ol Sayfası")
-            .navigationTitle("Kayıt Ol")
-    }
-}
-
-struct LoginView: View {
-    var body: some View {
-        Text("Giriş Yap Sayfası")
-            .navigationTitle("Giriş Yap")
-    }
-}
 
 #Preview {
     ContentView()

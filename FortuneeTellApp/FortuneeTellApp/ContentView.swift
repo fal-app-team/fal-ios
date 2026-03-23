@@ -4,7 +4,15 @@ import FirebaseAuth
 import GoogleSignIn
 
 struct ContentView: View {
-    
+    struct GoogleLoginRequest: Codable {
+        let email: String
+        let name: String
+    }
+
+    struct BackendAuthResponse: Codable {
+        let token: String
+        let message: String
+    }
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     
@@ -212,51 +220,116 @@ struct ContentView: View {
             }
         }
     }
+    func sendGoogleUserToBackend(email: String, name: String, completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: "http://localhost:8080/api/auth/google-login") else {
+            print("Backend URL hatalı")
+            completion(false)
+            return
+        }
+
+        let body = GoogleLoginRequest(email: email, name: name)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            print("JSON encode hatası: \(error.localizedDescription)")
+            completion(false)
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Backend google login hatası: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            guard let data = data else {
+                print("Backend response boş")
+                completion(false)
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Status Code: \(httpResponse.statusCode)")
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode(BackendAuthResponse.self, from: data)
+                print("Backend response: \(decoded.message)")
+                print("JWT Token: \(decoded.token)")
+                completion(true)
+            } catch {
+                print("Decode hatası: \(error.localizedDescription)")
+                print("Raw response: \(String(data: data, encoding: .utf8) ?? "okunamadı")")
+                completion(false)
+            }
+        }.resume()
+    }
     
     func signInWithGoogle() {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             print("clientID bulunamadı")
             return
         }
-        
+
         let config = GIDConfiguration(clientID: clientID)
-        
+
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else {
             print("RootViewController bulunamadı")
             return
         }
-        
+
         GIDSignIn.sharedInstance.configuration = config
-        
+
         GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
             if let error = error {
                 print("Google giriş hatası: \(error.localizedDescription)")
                 return
             }
-            
+
             guard let user = result?.user,
                   let idToken = user.idToken?.tokenString else {
                 print("Google kullanıcı bilgisi alınamadı")
                 return
             }
-            
+
             let accessToken = user.accessToken.tokenString
             let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
-            
+
             Auth.auth().signIn(with: credential) { authResult, error in
                 if let error = error {
                     print("Firebase Google giriş hatası: \(error.localizedDescription)")
                     return
                 }
-                
-                print("Google ile giriş başarılı: \(authResult?.user.email ?? "mail yok")")
-                
-                DispatchQueue.main.async {
-                    isLoggedIn = true
+
+                guard let firebaseUser = authResult?.user else {
+                    print("Firebase user alınamadı")
+                    return
+                }
+
+                let email = firebaseUser.email ?? ""
+                let name = firebaseUser.displayName ?? "Google User"
+
+                print("Google ile giriş başarılı: \(email)")
+
+                sendGoogleUserToBackend(email: email, name: name) { success in
+                    DispatchQueue.main.async {
+                        if success {
+                            isLoggedIn = true
+                        } else {
+                            print("Kullanıcı backend tarafında users tablosuna kaydedilemedi")
+                        }
+                    }
                 }
             }
         }
+    
     }
 }
 

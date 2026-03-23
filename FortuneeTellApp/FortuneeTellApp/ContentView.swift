@@ -15,6 +15,7 @@ struct ContentView: View {
     }
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("jwtToken") private var jwtToken = ""
     
     var body: some View {
         Group {
@@ -220,10 +221,10 @@ struct ContentView: View {
             }
         }
     }
-    func sendGoogleUserToBackend(email: String, name: String, completion: @escaping (Bool) -> Void) {
+    func sendGoogleUserToBackend(email: String, name: String, completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: "http://localhost:8080/api/auth/google-login") else {
             print("Backend URL hatalı")
-            completion(false)
+            completion(false, nil)
             return
         }
 
@@ -237,20 +238,20 @@ struct ContentView: View {
             request.httpBody = try JSONEncoder().encode(body)
         } catch {
             print("JSON encode hatası: \(error.localizedDescription)")
-            completion(false)
+            completion(false, nil)
             return
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Backend google login hatası: \(error.localizedDescription)")
-                completion(false)
+                completion(false, nil)
                 return
             }
 
             guard let data = data else {
                 print("Backend response boş")
-                completion(false)
+                completion(false, nil)
                 return
             }
 
@@ -262,11 +263,11 @@ struct ContentView: View {
                 let decoded = try JSONDecoder().decode(BackendAuthResponse.self, from: data)
                 print("Backend response: \(decoded.message)")
                 print("JWT Token: \(decoded.token)")
-                completion(true)
+                completion(true, decoded.token)
             } catch {
                 print("Decode hatası: \(error.localizedDescription)")
                 print("Raw response: \(String(data: data, encoding: .utf8) ?? "okunamadı")")
-                completion(false)
+                completion(false, nil)
             }
         }.resume()
     }
@@ -318,9 +319,10 @@ struct ContentView: View {
 
                 print("Google ile giriş başarılı: \(email)")
 
-                sendGoogleUserToBackend(email: email, name: name) { success in
+                sendGoogleUserToBackend(email: email, name: name) { success, token in
                     DispatchQueue.main.async {
-                        if success {
+                        if success, let token = token {
+                            jwtToken = token
                             isLoggedIn = true
                         } else {
                             print("Kullanıcı backend tarafında users tablosuna kaydedilemedi")

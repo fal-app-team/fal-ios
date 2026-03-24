@@ -2,12 +2,15 @@ import SwiftUI
 
 struct OnboardingFlowView: View {
     @StateObject private var vm = OnboardingViewModel()
+    @AppStorage("jwtToken") private var jwtToken = ""
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    
     func goNext() {
         if vm.step < 5 && vm.canGoNext(step: vm.step) {
             withAnimation {
                 vm.step += 1
             }
-        }
+        } 
     }
 
     var body: some View {
@@ -44,14 +47,14 @@ struct OnboardingFlowView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
-            
+
                 ZStack {
                     switch vm.step {
                     case 0:
                         NameStepView(name: $vm.name) {
                             goNext()
                         }
-                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
 
                     case 1:
                         BirthDateStepView(birthDate: $vm.birthDate)
@@ -68,6 +71,7 @@ struct OnboardingFlowView: View {
                     case 4:
                         WorkStepView(selected: $vm.work)
                             .transition(.move(edge: .trailing).combined(with: .opacity))
+
                     case 5:
                         WelcomeStepView()
                             .transition(.move(edge: .trailing).combined(with: .opacity))
@@ -84,16 +88,77 @@ struct OnboardingFlowView: View {
                     title: vm.step == 5 ? "Falına Başla" : "Devam",
                     isEnabled: vm.canGoNext(step: vm.step)
                 ) {
-                        if vm.step < 5 {
+                    if vm.step < 5 {
+                        withAnimation {
                             vm.step += 1
-                        } else {
-                            print("Onboarding bitti")
                         }
-                    
+                    } else {
+                        submitOnboarding(vm: vm, jwtToken: jwtToken) { success in
+                            DispatchQueue.main.async {
+                                if success {
+                                    hasCompletedOnboarding = true
+                                } else {
+                                    print("Onboarding backend'e kaydedilemedi")
+                                }
+                            }
+                        }
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
             }
         }
     }
+}
+func submitOnboarding(vm: OnboardingViewModel, jwtToken: String, completion: @escaping (Bool) -> Void) {
+    guard let gender = vm.gender,
+          let relationship = vm.relationship,
+          let work = vm.work,
+          let birthDate = vm.birthDate,
+          let url = URL(string: "http://localhost:8080/api/onboarding") else {
+        completion(false)
+        return
+    }
+
+    let requestBody = OnboardingRequestDTO(
+        name: vm.name.trimmingCharacters(in: .whitespacesAndNewlines),
+        birthDate: vm.formatDateForBackend(birthDate),
+        gender: gender.backendValue,
+        relationshipStatus: relationship.backendValue,
+        employmentStatus: work.backendValue
+    )
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+    do {
+        request.httpBody = try JSONEncoder().encode(requestBody)
+    } catch {
+        print("Onboarding encode hatası: \(error.localizedDescription)")
+        completion(false)
+        return
+    }
+
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        if let error = error {
+            print("Onboarding request hatası: \(error.localizedDescription)")
+            completion(false)
+            return
+        }
+
+        if let httpResponse = response as? HTTPURLResponse {
+            print("Onboarding status code: \(httpResponse.statusCode)")
+        }
+
+        guard let data = data else {
+            print("Onboarding response boş")
+            completion(false)
+            return
+        }
+
+        print("Onboarding raw response:", String(data: data, encoding: .utf8) ?? "okunamadı")
+        completion(true)
+    }.resume()
 }

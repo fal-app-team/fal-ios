@@ -13,10 +13,11 @@ struct ContentView: View {
         let token: String
         let message: String
     }
+
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage("jwtToken") private var jwtToken = ""
-    
+
     var body: some View {
         Group {
             if !isLoggedIn {
@@ -31,7 +32,7 @@ struct ContentView: View {
             isLoggedIn = Auth.auth().currentUser != nil
         }
     }
-    
+
     private var loginScreen: some View {
         NavigationStack {
             ZStack {
@@ -45,45 +46,41 @@ struct ContentView: View {
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
-                
+
                 StarsOverlay()
                     .ignoresSafeArea()
-                
+
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
-                        
-                        Spacer()
-                            .frame(height: 40)
-                        
+                        Spacer().frame(height: 40)
+
                         VStack(spacing: 10) {
                             Text("Falcınız")
                                 .font(.system(size: 40, weight: .heavy))
                                 .foregroundColor(.white)
-                            
+
                             Text("Kaderine Işık Tut")
                                 .font(.system(size: 22, weight: .bold))
                                 .foregroundColor(.white.opacity(0.96))
-                            
+
                             Text("Geleceğini keşfet.")
                                 .font(.system(size: 17, weight: .medium))
                                 .foregroundColor(.white.opacity(0.75))
                         }
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 24)
-                        
-                        Spacer()
-                            .frame(height: 22)
-                        
+
+                        Spacer().frame(height: 22)
+
                         HStack(spacing: 10) {
                             FeatureChip(icon: "sparkles", text: "Günlük Fal")
                             FeatureChip(icon: "moon.stars.fill", text: "Rüya Yorumu")
                             FeatureChip(icon: "wand.and.stars", text: "Tarot")
                         }
                         .padding(.horizontal, 10)
-                        
-                        Spacer()
-                            .frame(height: 28)
-                        
+
+                        Spacer().frame(height: 28)
+
                         Image("falHero")
                             .resizable()
                             .scaledToFill()
@@ -95,29 +92,27 @@ struct ContentView: View {
                             )
                             .shadow(color: Color.black.opacity(0.28), radius: 18, x: 0, y: 10)
                             .shadow(color: Color.pink.opacity(0.18), radius: 16, x: 0, y: 0)
-                        
-                        Spacer()
-                            .frame(height: 26)
-                        
+
+                        Spacer().frame(height: 26)
+
                         VStack(spacing: 18) {
-                            
                             VStack(spacing: 6) {
                                 Text("Hoş Geldin")
                                     .font(.system(size: 30, weight: .bold))
                                     .foregroundColor(.white)
-                                
+
                                 Text("Mistik yolculuğuna başla")
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(.white.opacity(0.72))
                             }
-                            
+
                             Button(action: {
                                 signInWithGoogle()
                             }) {
                                 HStack(spacing: 12) {
                                     Image(systemName: "globe")
                                         .font(.system(size: 18, weight: .semibold))
-                                    
+
                                     Text("Google ile Giriş Yap")
                                         .font(.system(size: 18, weight: .semibold))
                                 }
@@ -133,29 +128,29 @@ struct ContentView: View {
                                         )
                                 )
                             }
-                            
+
                             HStack(spacing: 12) {
                                 Rectangle()
                                     .fill(Color.white.opacity(0.13))
                                     .frame(height: 1)
-                                
+
                                 Text("ya da")
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundColor(.white.opacity(0.65))
-                                
+
                                 Rectangle()
                                     .fill(Color.white.opacity(0.13))
                                     .frame(height: 1)
                             }
                             .padding(.top, 2)
-                            
+
                             NavigationLink {
-                                EmailLoginView()
+                                RegisterView()
                             } label: {
                                 HStack(spacing: 12) {
                                     Image(systemName: "envelope")
                                         .font(.system(size: 18, weight: .semibold))
-                                    
+
                                     Text("E-mail ile Devam Et")
                                         .font(.system(size: 18, weight: .bold))
                                 }
@@ -175,23 +170,13 @@ struct ContentView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 18))
                                 .shadow(color: .pink.opacity(0.30), radius: 14, x: 0, y: 8)
                             }
-                            
+
                             VStack(spacing: 10) {
-                                HStack(spacing: 4) {
-                                    Text("Hesabın yok mu?")
-                                        .foregroundColor(.white.opacity(0.68))
-                                    
-                                    NavigationLink("Kayıt Ol") {
-                                        RegisterView()
-                                    }
-                                    .foregroundColor(.white)
-                                    .fontWeight(.bold)
-                                }
-                                
+                               
                                 HStack(spacing: 4) {
                                     Text("Zaten hesabın var mı?")
                                         .foregroundColor(.white.opacity(0.68))
-                                    
+
                                     NavigationLink("Giriş Yap") {
                                         LoginView()
                                     }
@@ -213,14 +198,14 @@ struct ContentView: View {
                                 )
                         )
                         .padding(.horizontal, 22)
-                        
-                        Spacer()
-                            .frame(height: 30)
+
+                        Spacer().frame(height: 30)
                     }
                 }
             }
         }
     }
+
     func sendGoogleUserToBackend(email: String, name: String, completion: @escaping (Bool, String?) -> Void) {
         guard let url = URL(string: "http://localhost:8080/api/auth/google-login") else {
             print("Backend URL hatalı")
@@ -271,7 +256,7 @@ struct ContentView: View {
             }
         }.resume()
     }
-    
+
     func signInWithGoogle() {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             print("clientID bulunamadı")
@@ -331,14 +316,13 @@ struct ContentView: View {
                 }
             }
         }
-    
     }
 }
 
 struct FeatureChip: View {
     let icon: String
     let text: String
-    
+
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: icon)
@@ -377,27 +361,6 @@ struct StarsOverlay: View {
     }
 }
 
-// Geçici sayfalar
-struct EmailLoginView: View {
-    var body: some View {
-        Text("E-mail ile Devam Et Sayfası")
-            .navigationTitle("E-mail")
-    }
-}
-
-struct RegisterView: View {
-    var body: some View {
-        Text("Kayıt Ol Sayfası")
-            .navigationTitle("Kayıt Ol")
-    }
-}
-
-struct LoginView: View {
-    var body: some View {
-        Text("Giriş Yap Sayfası")
-            .navigationTitle("Giriş Yap")
-    }
-}
 
 #Preview {
     ContentView()

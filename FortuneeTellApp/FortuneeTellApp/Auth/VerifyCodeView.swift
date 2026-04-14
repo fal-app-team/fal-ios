@@ -6,12 +6,14 @@ struct VerifyCodeView: View {
     @State private var isLoading = false
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var navigateToHome = false
+    @AppStorage("jwtToken") private var jwtToken = ""
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var navigateToOnboarding = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // Arka plan gradient
                 LinearGradient(
                     colors: [
                         Color(red: 42/255, green: 10/255, blue: 99/255),
@@ -23,7 +25,6 @@ struct VerifyCodeView: View {
                 )
                 .ignoresSafeArea()
                 
-                // Yıldız efekti 
                 StarsOverlay()
                     .ignoresSafeArea()
                 
@@ -79,8 +80,8 @@ struct VerifyCodeView: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 40)
             }
-            // iOS16+ navigationDestination
-            .navigationDestination(isPresented: $navigateToHome) {
+            // Onboarding'a yönlendirme
+            .navigationDestination(isPresented: $navigateToOnboarding) {
                 OnboardingFlowView()
             }
         }
@@ -93,13 +94,19 @@ struct VerifyCodeView: View {
         isLoading = true
         let request = VerifyCodeRequest(email: email, code: code)
         AuthService.shared.verifyCode(request: request) { result in
-            isLoading = false
-            switch result {
-            case .success(_):
-                navigateToHome = true
-            case .failure(let error):
-                alertMessage = error.localizedDescription
-                showAlert = true
+            DispatchQueue.main.async {
+                isLoading = false
+                switch result {
+                case .success(let response):
+                    // JWT token backend'den geldiğinde kaydet
+                    jwtToken = response.token
+                    isLoggedIn = true
+                    hasCompletedOnboarding = false
+                    navigateToOnboarding = true
+                case .failure(let error):
+                    alertMessage = error.localizedDescription
+                    showAlert = true
+                }
             }
         }
     }

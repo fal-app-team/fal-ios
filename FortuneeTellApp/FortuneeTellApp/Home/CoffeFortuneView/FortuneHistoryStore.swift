@@ -52,6 +52,36 @@ final class FortuneHistoryStore: ObservableObject {
         items.insert(item, at: 0)
     }
     
+    func addDreamFortune(
+        interpretation: String,
+        themes: [String],
+        suggestion: String
+    ) {
+        let detailText: String
+        
+        if themes.isEmpty && suggestion.isEmpty {
+            detailText = interpretation
+        } else {
+            detailText = """
+            \(interpretation)
+
+            Temalar: \(themes.joined(separator: ", "))
+
+            Öneri: \(suggestion)
+            """
+        }
+        
+        let item = FortuneHistoryItem(
+            type: .dream,
+            images: [],
+            date: Date(),
+            status: "Tamamlandı",
+            interpretation: detailText
+        )
+        
+        items.insert(item, at: 0)
+    }
+    
     var coffeeCount: Int {
         items.filter { $0.type == .coffee }.count
     }

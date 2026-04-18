@@ -70,7 +70,7 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
 
-                    NavigationLink(destination: DreamDetailView()) {
+                    NavigationLink(destination: DreamDetailView(selectedTab: $selectedTab)) {
                         FortuneCategoryCard(
                             title: "Rüya Yorumu",
                             subtitle: "Rüyalarının anlamını keşfet",

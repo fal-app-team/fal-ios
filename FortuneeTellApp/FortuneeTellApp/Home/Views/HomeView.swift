@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var selectedTab: TabItem = .home
+    @StateObject private var historyStore = FortuneHistoryStore()
 
     var body: some View {
         NavigationStack {
@@ -33,6 +34,7 @@ struct HomeView: View {
             }
             .navigationBarBackButtonHidden(true)
         }
+        .environmentObject(historyStore)
     }
 
     private var homeContent: some View {
@@ -40,7 +42,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 22) {
                 GreetingHeaderView()
 
-                StatCardView(totalFortunes: 0)
+                StatCardView(totalFortunes: historyStore.items.count)
 
                 Text("Fal Çeşitleri")
                     .font(.system(size: 22, weight: .bold))
@@ -48,7 +50,7 @@ struct HomeView: View {
                     .padding(.top, 4)
 
                 VStack(spacing: 18) {
-                    NavigationLink(destination: CoffeeDetailView()) {
+                    NavigationLink(destination: CoffeeDetailView(selectedTab: $selectedTab)) {
                         FortuneCategoryCard(
                             title: "Kahve Falı",
                             subtitle: "Fincanından geleceğini oku",

@@ -14,22 +14,53 @@ struct ContentView: View {
         let message: String
     }
 
+    struct OnboardingResponseDTO: Codable {
+        let userId: Int
+        let name: String?
+        let email: String
+        let birthDate: String?
+        let gender: String?
+        let relationshipStatus: String?
+        let employementStatus: String?
+        let onboardingCompleted: Bool
+    }
+
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @AppStorage("jwtToken") private var jwtToken = ""
+
+    @State private var isCheckingProfile = false
 
     var body: some View {
         Group {
             if !isLoggedIn {
                 loginScreen
+            } else if isCheckingProfile {
+                loadingScreen
             } else if !hasCompletedOnboarding {
                 OnboardingFlowView()
             } else {
                 HomeView()
             }
         }
-        .onAppear {
-            isLoggedIn = Auth.auth().currentUser != nil
+        .task(id: isLoggedIn) {
+            await refreshSessionState()
+        }
+    }
+
+    private var loadingScreen: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.2)
+
+                Text("Bilgilerin kontrol ediliyor...")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -172,7 +203,6 @@ struct ContentView: View {
                             }
 
                             VStack(spacing: 10) {
-                               
                                 HStack(spacing: 4) {
                                     Text("Zaten hesabın var mı?")
                                         .foregroundColor(.white.opacity(0.68))
@@ -203,6 +233,59 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+    }
+
+    @MainActor
+    private func refreshSessionState() async {
+        guard isLoggedIn else {
+            isCheckingProfile = false
+            hasCompletedOnboarding = false
+            return
+        }
+
+        guard !jwtToken.isEmpty else {
+            isLoggedIn = false
+            hasCompletedOnboarding = false
+            isCheckingProfile = false
+            return
+        }
+
+        isCheckingProfile = true
+        let profile = await fetchMyProfile(jwtToken: jwtToken)
+
+        if let profile {
+            hasCompletedOnboarding = profile.onboardingCompleted
+        } else {
+            hasCompletedOnboarding = false
+        }
+
+        isCheckingProfile = false
+    }
+
+    func fetchMyProfile(jwtToken: String) async -> OnboardingResponseDTO? {
+        guard let url = URL(string: "http://localhost:8080/api/onboarding/me") else {
+            print("Profil URL hatalı")
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Profil status code: \(httpResponse.statusCode)")
+            }
+
+            let decoded = try JSONDecoder().decode(OnboardingResponseDTO.self, from: data)
+            print("Profil onboardingCompleted: \(decoded.onboardingCompleted)")
+            return decoded
+        } catch {
+            print("Profil çekme hatası: \(error.localizedDescription)")
+            return nil
         }
     }
 
@@ -360,7 +443,6 @@ struct StarsOverlay: View {
         }
     }
 }
-
 
 #Preview {
     ContentView()

@@ -4,6 +4,7 @@ import FirebaseAuth
 struct ProfileView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @AppStorage("jwtToken") private var jwtToken = ""
 
     var body: some View {
         VStack(spacing: 18) {
@@ -15,6 +16,7 @@ struct ProfileView: View {
             Button("Çıkış Yap") {
                 do {
                     try Auth.auth().signOut()
+                    jwtToken = ""
                     isLoggedIn = false
                     hasCompletedOnboarding = false
                 } catch {

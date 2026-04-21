@@ -128,8 +128,7 @@ struct TarotDetailView: View {
 
     private func setupDeck() {
         deck = (1...12).map { i in
-            // nameShort: "" vererek Missing Argument hatasını çözüyoruz
-            TarotCard(id: 1000 + i, name: "Bilinmeyen", nameShort: "", meaningUp: "", meaningRev: "", description: "")
+            TarotCard(id: 1000 + i, name: "Bilinmeyen", nameShort: "", meaningUp: "", meaningRev: "", description: "", imageUrl: "")
         }
     }
 
@@ -163,25 +162,34 @@ struct CardView: View {
                 )
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(red: 255/255, green: 215/255, blue: 0/255).opacity(0.4), lineWidth: 1.5))
                 .opacity(isFaceUp ? 0 : 1)
-            
+      
             // KARTIN ÖNÜ
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white)
                 .overlay(
                     VStack {
                         Spacer()
-                        
-                        if let imgName = card.nameShort, !imgName.isEmpty {
-                            // Uzantı kontrolü: ar ile başlıyorsa .png, değilse .jpg
-                            let ext = imgName.hasPrefix("ar") ? "png" : "jpg"
-                            let url = URL(string: "https://raw.githubusercontent.com/metabismuth/tarot-json/master/cards/\(imgName).\(ext)")
+                        if let imgUrlString = card.imageUrl,
+                           let encodedUrlString = imgUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                           let url = URL(string: encodedUrlString) {
                             
                             AsyncImage(url: url) { phase in
                                 switch phase {
                                 case .success(let image):
                                     image.resizable().aspectRatio(contentMode: .fit).padding(5)
-                                case .failure:
-                                    Image(systemName: "sparkles").foregroundColor(.orange)
+                                    
+                                case .failure(let error):
+                                    // ATA BURADA YAKALANIYOR VE KARTA YAZDIRILIYOR
+                                    VStack {
+                                        Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red)
+                                        Text(error.localizedDescription)
+                                            .font(.system(size: 8))
+                                            .foregroundColor(.red)
+                                            .multilineTextAlignment(.center)
+                                            .padding(2)
+                                    }
+                                    let _ = print("RESİM HATASI (\(card.name)): \(error.localizedDescription)")
+                                    
                                 case .empty:
                                     ProgressView()
                                 @unknown default:
@@ -189,19 +197,23 @@ struct CardView: View {
                                 }
                             }
                         } else {
-                            Image(systemName: "sparkles").foregroundColor(.orange).font(.largeTitle)
+                            // Eğer backend'den imageUrl hiç gelmezse
+                            VStack {
+                                Image(systemName: "xmark.octagon").foregroundColor(.red)
+                                Text("URL BOŞ").font(.system(size: 10)).foregroundColor(.red)
+                            }
                         }
-
+                      
+                    
                         Spacer()
                         
                         Text(card.name)
-                            .font(.system(size: 12, weight: .bold)) // Fontu biraz küçülttük sığması için
+                            .font(.system(size: 12, weight: .bold))
                             .foregroundColor(Color(red: 68/255, green: 20/255, blue: 140/255))
                             .multilineTextAlignment(.center)
                             .padding(.bottom, 10)
                     }
-                    // ÖNEMLİ: İçeriği düzeltmek için ayna etkisi
-                    .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
+                        .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
                 )
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.orange.opacity(0.8), lineWidth: 2))
                 .opacity(isFaceUp ? 1 : 0)

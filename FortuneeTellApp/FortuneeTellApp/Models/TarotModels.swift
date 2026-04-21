@@ -8,6 +8,7 @@ struct TarotCard: Codable, Identifiable, Equatable {
     let meaningUp: String?
     let meaningRev: String?
     let description: String?
+    let imageUrl: String?
 }
 
 struct TarotReadingResponse: Codable {

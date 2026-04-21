@@ -3,8 +3,7 @@ import Foundation
 class TarotService {
     
     static let shared = TarotService()
-    
-    // Simülatör için localhost (127.0.0.1) geçerlidir.
+
     private let baseURL = "http://127.0.0.1:8080/api/tarot"
     
     private init() {}
@@ -23,7 +22,7 @@ class TarotService {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             
-            // 1. İHTİMAL: İstek sunucuya hiç gidemedi (İnternet yok, localhost kapalı, veya HTTP engeli var)
+            //  İstek sunucuya hiç gidemedi
             if let error = error {
                 print(" AĞ HATASI (Sunucuya ulaşılamadı): \(error.localizedDescription)")
                 DispatchQueue.main.async {
@@ -32,7 +31,7 @@ class TarotService {
                 return
             }
             
-            // 2. İHTİMAL: İstek sunucuya gitti ve bir cevap döndü (Örn: 200 Başarılı, 401 Yetkisiz, 500 Çöktü)
+            // İstek sunucuya gitti ve bir cevap döndü 
             if let httpResponse = response as? HTTPURLResponse {
                 print(" BACKEND'DEN GELEN CEVAP KODU: \(httpResponse.statusCode)")
                 
@@ -46,6 +45,9 @@ class TarotService {
             }
             
             guard let data = data else { return }
+            if let rawJson = String(data: data, encoding: .utf8) {
+                            print("BACKEND'DEN GELEN SAF JSON: \(rawJson)")
+                        }
             
             do {
                 let decodedResponse = try JSONDecoder().decode(TarotReadingResponse.self, from: data)

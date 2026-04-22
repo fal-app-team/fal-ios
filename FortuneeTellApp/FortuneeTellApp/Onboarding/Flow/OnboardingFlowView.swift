@@ -4,13 +4,13 @@ struct OnboardingFlowView: View {
     @StateObject private var vm = OnboardingViewModel()
     @AppStorage("jwtToken") private var jwtToken = ""
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    
+
     func goNext() {
         if vm.step < 5 && vm.canGoNext(step: vm.step) {
             withAnimation {
                 vm.step += 1
             }
-        } 
+        }
     }
 
     var body: some View {
@@ -23,7 +23,6 @@ struct OnboardingFlowView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 16) {
-
                 HStack {
                     Button {
                         if vm.step > 0 {
@@ -110,6 +109,7 @@ struct OnboardingFlowView: View {
         }
     }
 }
+
 func submitOnboarding(vm: OnboardingViewModel, jwtToken: String, completion: @escaping (Bool) -> Void) {
     guard let gender = vm.gender,
           let relationship = vm.relationship,

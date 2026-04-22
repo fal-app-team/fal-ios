@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @EnvironmentObject var historyStore: FortuneHistoryStore
+    @AppStorage("jwtToken") private var jwtToken = "" // Token'ı hafızadan alıyoruz
 
     var body: some View {
         ZStack {
@@ -19,7 +20,11 @@ struct HistoryView: View {
                 VStack(alignment: .leading, spacing: 22) {
                     headerSection
 
-                    if historyStore.items.isEmpty {
+                    if historyStore.isLoading {
+                        ProgressView("Yükleniyor...")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else if historyStore.items.isEmpty {
                         emptyStateCard
                     } else {
                         ForEach(historyStore.items) { item in
@@ -28,7 +33,6 @@ struct HistoryView: View {
                     }
 
                     statisticsSection
-
                     Spacer(minLength: 100)
                 }
                 .padding(.horizontal, 20)
@@ -36,7 +40,12 @@ struct HistoryView: View {
                 .padding(.bottom, 90)
             }
         }
+        .onAppear {
+            historyStore.fetchHistory(token: jwtToken)
+        }
     }
+
+    // --- YARDIMCI GÖRÜNÜMLER (Artık doğru yerdeler) ---
 
     private var headerSection: some View {
         HStack(alignment: .center) {
@@ -121,6 +130,8 @@ struct HistoryView: View {
     }
 }
 
+// --- KART GÖRÜNÜMÜ ---
+
 struct FortuneHistoryCard: View {
     let item: FortuneHistoryItem
     @State private var showDetail = false
@@ -131,7 +142,7 @@ struct FortuneHistoryCard: View {
                 iconBox
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.type.rawValue)
+                    Text(item.type.displayName) // Yeni eklediğimiz displayName'i kullanıyoruz
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(Color(.label))
 
@@ -167,7 +178,9 @@ struct FortuneHistoryCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 30))
         .shadow(color: Color.black.opacity(0.07), radius: 14, x: 0, y: 8)
         .sheet(isPresented: $showDetail) {
-            FortuneDetailView(item: item)
+            // Burası için ayrı bir FortuneDetailView olduğunu varsayıyorum
+            Text(item.aiResponse ?? "Yorum Yok")
+                .padding()
         }
     }
 
@@ -187,11 +200,7 @@ struct FortuneHistoryCard: View {
     }
 
     private var previewText: String {
-        if let interpretation = item.interpretation, !interpretation.isEmpty {
-            return interpretation
-        } else {
-            return item.status
-        }
+        return item.aiResponse ?? "Yorum hazırlanıyor..."
     }
 
     private func formattedDate(_ date: Date) -> String {

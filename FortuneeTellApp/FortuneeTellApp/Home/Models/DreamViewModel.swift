@@ -1,84 +1,63 @@
 import Foundation
 
-@MainActor
 class DreamViewModel: ObservableObject {
-    @Published var interpretationResult: String = ""
-    @Published var suggestion: String = ""
-    @Published var themes: [String] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+    @Published var isLoading = false
+    @Published var errorMessage: String? = nil
+    @Published var lastInterpretation: String? = nil
 
-    func interpretDream(dreamText: String, symbols: [String]) async {
-        guard let url = URL(string: "http://127.0.0.1:8080/api/dream/interpret") else {
-            errorMessage = "Geçersiz URL"
-            return
+    func interpretDream(dreamText: String, token: String) async -> Bool {
+        // UI güncellemelerini ana thread'de yapıyoruz
+        await MainActor.run {
+            self.isLoading = true
+            self.errorMessage = nil
         }
-
-        isLoading = true
-        errorMessage = nil
-        interpretationResult = ""
-        suggestion = ""
-        themes = []
-
-        let requestBody = DreamInterpretRequest(
-            dreamText: dreamText,
-            symbols: symbols,
-            userName: nil
-        )
-
+        
+        // Backend URL'ini kontrol et (localhost:8080 kullandığını varsayıyorum)
+        guard let url = URL(string: "http://localhost:8080/api/dream/interpret") else {
+            await MainActor.run {
+                self.errorMessage = "Sunucu adresi hatalı."
+                self.isLoading = false
+            }
+            return false
+        }
+        
+        let body: [String: Any] = ["dreamText": dreamText]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
         do {
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            if let token = UserDefaults.standard.string(forKey: "jwtToken") {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                print("JWT Token gönderildi:", token)
-            } else {
-                print("JWT Token bulunamadı")
-            }
-
-            request.timeoutInterval = 30
-
-            let encodedBody = try JSONEncoder().encode(requestBody)
-            request.httpBody = encodedBody
-
-            print("=== DREAM REQUEST START ===")
-            print("URL:", url.absoluteString)
-            print("Dream Text:", dreamText)
-            print("Symbols:", symbols)
-            print("Request JSON:", String(data: encodedBody, encoding: .utf8) ?? "Body çevrilemedi")
-
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+            
             let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                errorMessage = "Geçersiz sunucu cevabı"
-                isLoading = false
-                return
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                // Backend'den gelen JSON'u parse ediyoruz
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let interpretation = json["interpretation"] as? String {
+                    
+                    await MainActor.run {
+                        self.lastInterpretation = interpretation
+                        self.isLoading = false
+                    }
+                    return true
+                }
             }
-
-            print("Status Code:", httpResponse.statusCode)
-            print("Response Body:", String(data: data, encoding: .utf8) ?? "Boş response")
-
-            guard 200...299 ~= httpResponse.statusCode else {
-                let serverMessage = String(data: data, encoding: .utf8) ?? "Bilinmeyen hata"
-                errorMessage = "Sunucu hatası (\(httpResponse.statusCode)): \(serverMessage)"
-                isLoading = false
-                return
+            
+            await MainActor.run {
+                self.errorMessage = "Rüya yorumu alınamadı."
+                self.isLoading = false
             }
-
-            let decoded = try JSONDecoder().decode(DreamInterpretResponse.self, from: data)
-            interpretationResult = decoded.interpretation
-            suggestion = decoded.suggestion
-            themes = decoded.detectedThemes
-
-            print("Decoded interpretation:", decoded.interpretation)
-            print("=== DREAM REQUEST END ===")
+            return false
+            
         } catch {
-            print("REQUEST ERROR:", error)
-            errorMessage = "İstek hatası: \(error.localizedDescription)"
+            await MainActor.run {
+                self.errorMessage = "Bağlantı hatası: \(error.localizedDescription)"
+                self.isLoading = false
+            }
+            return false
         }
-
-        isLoading = false
     }
 }

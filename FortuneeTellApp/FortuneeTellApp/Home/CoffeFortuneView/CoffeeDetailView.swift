@@ -272,23 +272,21 @@ struct CoffeeDetailView: View {
     }
     
     private func submitFortune() {
-        guard allImagesSelected else {
-            showMissingPhotosAlert = true
-            return
+            guard allImagesSelected else {
+                showMissingPhotosAlert = true
+                return
+            }
+            
+            isLoading = true
+            
+            // Şimdilik backend'e fotoğraf gönderme kısmını pas geçiyoruz.
+            // Sadece 1 saniye yükleniyor animasyonu gösterip geçmişe atıyoruz.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                isLoading = false
+                selectedImages = [nil, nil, nil] // Resimleri temizle
+                selectedTab = .history // Geçmiş sayfasına yönlendir
+            }
         }
-        
-        let images = selectedImages.compactMap { $0 }
-        guard images.count == 3 else { return }
-        
-        isLoading = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
-            historyStore.addCoffeeFortune(images: images)
-            selectedImages = [nil, nil, nil]
-            isLoading = false
-            selectedTab = .history
-        }
-    }
 }
 
 #Preview {

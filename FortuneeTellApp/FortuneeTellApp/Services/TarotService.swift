@@ -15,9 +15,8 @@ class TarotService {
         request.httpMethod = "GET"
         
         // Token'ı Authorization header'ına ekliyoruz
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         print(" İSTEK ATILIYOR: \(url.absoluteString)")
         
         URLSession.shared.dataTask(with: request) { data, response, error in

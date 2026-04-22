@@ -32,7 +32,7 @@ struct TarotDetailView: View {
                     .foregroundColor(Color(red: 255/255, green: 215/255, blue: 0/255))
                     .padding(.top, 20)
                 
-                Text("İçinizden gelen sese kulak verin. \(selectedCards.count)/3 kart seçildi")
+                Text("İçinizden gelen sese kulak verin. \(selectedCards.count)/3 card seçildi")
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.8))
                     .padding(.bottom, 30)
@@ -67,23 +67,51 @@ struct TarotDetailView: View {
                 if showInterpretation {
                     ScrollView(showsIndicators: false) {
                         VStack(alignment: .leading, spacing: 15) {
-                            HStack {
-                                Image(systemName: "sparkles").foregroundColor(.yellow)
-                                Text("Evren size mesajını gönderdi").font(.headline).foregroundColor(.yellow)
+                            VStack(alignment: .leading, spacing: 18) {
+                                // Başlık
+                                HStack {
+                                    Image(systemName: "sparkles")
+                                        .foregroundColor(.yellow)
+                                    Text("Evrenin Mesajı Çözüldü")
+                                        .font(.custom("Palatino-Bold", size: 18))
+                                        .foregroundColor(.yellow)
+                                }
+                                
+                                // AI Yorumu
+                                Text(viewModel.interpretation)
+                                    .foregroundColor(.white)
+                                    .lineSpacing(7)
+                                    .font(.system(size: 16, weight: .medium))
+                                
+                                // Ayırıcı Çizgi
+                                Divider()
+                                    .background(Color.yellow.opacity(0.3))
+                                    .padding(.vertical, 8)
+                                
+                                // KAYDEDİLDİ BİLGİSİ
+                                HStack(spacing: 8) {
+                                    Image(systemName: "clock.arrow.circlepath")
+                                        .font(.system(size: 14))
+                                    Text("Bu kadim yorum ruhanî günlüğünüze işlendi.")
+                                        .font(.system(size: 13, weight: .light))
+                                        .italic()
+                                }
+                                .foregroundColor(.white.opacity(0.5))
+                                .frame(maxWidth: .infinity, alignment: .center)
                             }
-                            Text(viewModel.interpretation)
-                                .foregroundColor(.white)
-                                .lineSpacing(6)
-                                .font(.system(size: 16))
+                            .padding(20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.black.opacity(0.4))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(Color.yellow.opacity(0.2), lineWidth: 1)
+                            )
+                            .padding(.horizontal, 24)
                         }
-                        .padding(20)
-                        .background(Color.white.opacity(0.15))
-                        .cornerRadius(20)
-                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.yellow.opacity(0.3), lineWidth: 1))
-                        .padding(.horizontal, 24)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    
                 } else if viewModel.isLoading {
                     VStack(spacing: 15) {
                         ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .yellow)).scaleEffect(1.5)
@@ -126,9 +154,10 @@ struct TarotDetailView: View {
         }
     }
 
+    // Fonksiyonları body dışına taşıdık
     private func setupDeck() {
-        deck = (1...12).map { i in
-            TarotCard(id: 1000 + i, name: "Bilinmeyen", nameShort: "", meaningUp: "", meaningRev: "", description: "", imageUrl: "")
+        deck = (1...78).map { i in
+            TarotCard(id: 1000 + i, name: "Bilinmeyen", nameShort: "", meaningUp: "", meaningRev: "", description: "", imageUrl: "", reversed: false)
         }
     }
 
@@ -145,7 +174,7 @@ struct TarotDetailView: View {
     }
 }
 
-// MARK: - CardView
+// MARK: - CardView (Ayrı bir struct olarak dışarıda)
 struct CardView: View {
     let card: TarotCard
     let isFaceUp: Bool
@@ -162,7 +191,7 @@ struct CardView: View {
                 )
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(red: 255/255, green: 215/255, blue: 0/255).opacity(0.4), lineWidth: 1.5))
                 .opacity(isFaceUp ? 0 : 1)
-      
+            
             // KARTIN ÖNÜ
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.white)
@@ -176,10 +205,12 @@ struct CardView: View {
                             AsyncImage(url: url) { phase in
                                 switch phase {
                                 case .success(let image):
-                                    image.resizable().aspectRatio(contentMode: .fit).padding(5)
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .padding(5)
+                                        .rotationEffect(.degrees(card.reversed ? 180 : 0))
                                     
                                 case .failure(let error):
-                                    // ATA BURADA YAKALANIYOR VE KARTA YAZDIRILIYOR
                                     VStack {
                                         Image(systemName: "exclamationmark.triangle.fill").foregroundColor(.red)
                                         Text(error.localizedDescription)
@@ -188,7 +219,6 @@ struct CardView: View {
                                             .multilineTextAlignment(.center)
                                             .padding(2)
                                     }
-                                    let _ = print("RESİM HATASI (\(card.name)): \(error.localizedDescription)")
                                     
                                 case .empty:
                                     ProgressView()
@@ -197,14 +227,12 @@ struct CardView: View {
                                 }
                             }
                         } else {
-                            // Eğer backend'den imageUrl hiç gelmezse
                             VStack {
                                 Image(systemName: "xmark.octagon").foregroundColor(.red)
                                 Text("URL BOŞ").font(.system(size: 10)).foregroundColor(.red)
                             }
                         }
-                      
-                    
+                        
                         Spacer()
                         
                         Text(card.name)
@@ -213,12 +241,11 @@ struct CardView: View {
                             .multilineTextAlignment(.center)
                             .padding(.bottom, 10)
                     }
-                        .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
+                    .rotation3DEffect(Angle(degrees: 180), axis: (x: 0, y: 1, z: 0))
                 )
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.orange.opacity(0.8), lineWidth: 2))
                 .opacity(isFaceUp ? 1 : 0)
         }
-        // Kartın genel dönme animasyonu
         .rotation3DEffect(
             Angle(degrees: isFaceUp ? 180 : 0),
             axis: (x: 0.0, y: 1.0, z: 0.0)

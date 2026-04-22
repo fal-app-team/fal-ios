@@ -9,6 +9,7 @@ struct TarotCard: Codable, Identifiable, Equatable {
     let meaningRev: String?
     let description: String?
     let imageUrl: String?
+    let reversed: Bool
 }
 
 struct TarotReadingResponse: Codable {

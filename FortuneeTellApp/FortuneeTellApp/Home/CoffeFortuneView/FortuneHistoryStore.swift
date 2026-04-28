@@ -41,11 +41,36 @@ struct FortuneHistoryItem: Identifiable, Codable {
     
     // UI'da kullanmak için Date objesine çeviriyoruz
     var date: Date {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter.date(from: createdAt) ?? Date()
-    }
-}
+        // 1) 2026-04-28T10:04:12.123Z
+        let isoWithFraction = ISO8601DateFormatter()
+        isoWithFraction.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        // 2) 2026-04-28T10:04:12Z
+        let isoWithoutFraction = ISO8601DateFormatter()
+        isoWithoutFraction.formatOptions = [.withInternetDateTime]
+
+        // 3) 2026-04-28T10:04:12.123456
+        let backendFormatterWithMicroseconds = DateFormatter()
+        backendFormatterWithMicroseconds.locale = Locale(identifier: "en_US_POSIX")
+        backendFormatterWithMicroseconds.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+
+        // 4) 2026-04-28T10:04:12.123
+        let backendFormatterWithMillis = DateFormatter()
+        backendFormatterWithMillis.locale = Locale(identifier: "en_US_POSIX")
+        backendFormatterWithMillis.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+
+        // 5) 2026-04-28T10:04:12
+        let backendFormatterWithoutMillis = DateFormatter()
+        backendFormatterWithoutMillis.locale = Locale(identifier: "en_US_POSIX")
+        backendFormatterWithoutMillis.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+
+        return isoWithFraction.date(from: createdAt)
+            ?? isoWithoutFraction.date(from: createdAt)
+            ?? backendFormatterWithMicroseconds.date(from: createdAt)
+            ?? backendFormatterWithMillis.date(from: createdAt)
+            ?? backendFormatterWithoutMillis.date(from: createdAt)
+            ?? Date()
+    }}
 
 final class FortuneHistoryStore: ObservableObject {
     @Published var items: [FortuneHistoryItem] = []
@@ -55,25 +80,71 @@ final class FortuneHistoryStore: ObservableObject {
     func fetchHistory(token: String) {
         guard let url = URL(string: "http://127.0.0.1:8080/api/fortunes/history") else { return }
         
-        self.isLoading = true
+        DispatchQueue.main.async {
+            self.isLoading = true
+        }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            DispatchQueue.main.async { self.isLoading = false }
+            DispatchQueue.main.async {
+                self.isLoading = false
+            }
             
-            if let data = data {
-                do {
-                    let decodedItems = try JSONDecoder().decode([FortuneHistoryItem].self, from: data)
-                    DispatchQueue.main.async {
-                        self.items = decodedItems
+            if let error = error {
+                print("History fetch error:", error.localizedDescription)
+                return
+            }
+            
+            guard let data = data else {
+                print("History response boş")
+                return
+            }
+            
+            do {
+                let backendItems = try JSONDecoder().decode([FortuneHistoryItem].self, from: data)
+        
+                
+                DispatchQueue.main.async {
+                    let localItems = self.items.filter { localItem in
+                        localItem.id < 0
                     }
-                } catch {
-                    print("JSON Çözme Hatası: \(error)")
+                    
+                    let mergedItems = localItems + backendItems
+                    
+                    self.items = mergedItems.sorted {
+                        $0.date > $1.date
+                    }
+                    
+                    print("HISTORY COUNT:", self.items.count)
                 }
+            } catch {
+                print("JSON Çözme Hatası:", error)
+                print("Raw response:", String(data: data, encoding: .utf8) ?? "okunamadı")
             }
         }.resume()
+    }
+    func addLocalCoffeeFortune() {
+        let item = FortuneHistoryItem(
+            id: -Int(Date().timeIntervalSince1970),
+            type: .coffee,
+            userInput: "Fincan İçi, Tabak ve Yan Açı fotoğrafları yüklendi.",
+            aiResponse: "Kahve falın yorumlanmak üzere alındı. Yapay zeka modeli bağlandığında gerçek yorum burada görünecek.",
+            createdAt: ISO8601DateFormatter().string(from: Date())
+        )
+
+        items.insert(item, at: 0)
+    }
+    func addOrUpdate(_ item: FortuneHistoryItem) {
+        if let index = items.firstIndex(where: { $0.id == item.id }) {
+            items[index] = item
+        } else {
+            items.insert(item, at: 0)
+        }
+
+        items.sort { $0.date > $1.date }
     }
     
     var coffeeCount: Int { items.filter { $0.type == .coffee }.count }

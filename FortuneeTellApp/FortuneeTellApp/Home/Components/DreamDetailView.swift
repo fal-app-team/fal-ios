@@ -134,11 +134,12 @@ struct DreamDetailView: View {
             
             Divider()
             
-            Text(result)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.primary)
-                .lineSpacing(6)
-        }
+            Text(LocalizedStringKey(result))
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.primary)
+                        .lineSpacing(6)
+            }
+        
         .padding(20)
         .background(Color.white)
         .cornerRadius(24)

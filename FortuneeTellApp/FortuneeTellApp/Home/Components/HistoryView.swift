@@ -1,5 +1,7 @@
 import SwiftUI
 
+// --- 1. MODELLER VE ENUMLAR ---
+
 enum HistoryDateFilter: String, CaseIterable {
     case all = "Tümü"
     case today = "Bugün"
@@ -7,73 +9,126 @@ enum HistoryDateFilter: String, CaseIterable {
     case month = "Bu Ay"
 }
 
+struct ChartData: Identifiable {
+    let id = UUID()
+    let label: String
+    let count: Int
+}
+
+extension FortuneType: Identifiable {
+    public var id: Self { self }
+}
+
+// --- 2. ANA GEÇMİŞ GÖRÜNÜMÜ ---
+
 struct HistoryView: View {
     @EnvironmentObject var historyStore: FortuneHistoryStore
     @AppStorage("jwtToken") private var jwtToken = ""
-
-    @State private var selectedFilter: HistoryDateFilter = .all
+    
+    // Uygulama "Bu Hafta" seçili olarak başlar
+    @State private var selectedFilter: HistoryDateFilter = .week
+    @State private var selectedTypeForDetail: FortuneType? = nil
 
     private var filteredItems: [FortuneHistoryItem] {
         let calendar = Calendar.current
         let now = Date()
-
         switch selectedFilter {
-        case .all:
-            return historyStore.items
+        case .all: return historyStore.items
+        case .today: return historyStore.items.filter { calendar.isDate($0.date, inSameDayAs: now) }
+        case .week: return historyStore.items.filter { calendar.isDate($0.date, equalTo: now, toGranularity: .weekOfYear) }
+        case .month: return historyStore.items.filter { calendar.isDate($0.date, equalTo: now, toGranularity: .month) }
+        }
+    }
 
+    // --- TÜRKÇE VE DİNAMİK GRAFİK VERİSİ ---
+    private var chartStats: [ChartData] {
+        var calendar = Calendar.current
+        calendar.locale = Locale(identifier: "tr_TR") // Türkçe yerelleştirme zorunlu kılındı
+        let now = Date()
+        
+        switch selectedFilter {
         case .today:
-            return historyStore.items.filter {
-                calendar.isDate($0.date, inSameDayAs: now)
+            // Günlük: 08-12, 12-16 gibi aralık bazlı gösterim
+            let intervals = [
+                ("00-08", 0, 8), ("08-12", 8, 12), ("12-16", 12, 16),
+                ("16-20", 16, 20), ("20-00", 20, 24)
+            ]
+            return intervals.map { label, start, end in
+                let count = historyStore.items.filter { item in
+                    let hour = calendar.component(.hour, from: item.date)
+                    return calendar.isDate(item.date, inSameDayAs: now) && hour >= start && hour < end
+                }.count
+                return ChartData(label: label, count: count)
             }
-
+            
         case .week:
-            return historyStore.items.filter {
-                calendar.isDate($0.date, equalTo: now, toGranularity: .weekOfYear)
+            // Haftalık: Pzt, Sal, Çar...
+            let weekdays = [("Pzt", 2), ("Sal", 3), ("Çar", 4), ("Per", 5), ("Cum", 6), ("Cmt", 7), ("Paz", 1)]
+            return weekdays.map { label, num in
+                let count = historyStore.items.filter {
+                    calendar.isDate($0.date, equalTo: now, toGranularity: .weekOfYear) &&
+                    calendar.component(.weekday, from: $0.date) == num
+                }.count
+                return ChartData(label: label, count: count)
             }
-
+            
         case .month:
-            return historyStore.items.filter {
-                calendar.isDate($0.date, equalTo: now, toGranularity: .month)
+            // Aylık: 1. Hafta, 2. Hafta...
+            return (0..<4).map { i in
+                let count = historyStore.items.filter {
+                    calendar.isDate($0.date, equalTo: now, toGranularity: .month) &&
+                    (calendar.component(.day, from: $0.date)-1)/7 == i
+                }.count
+                return ChartData(label: "\(i+1). Hafta", count: count)
+            }
+            
+        case .all:
+            // Tümü: Son 6 ayın TÜRKÇE isimleri
+            let monthSymbols = calendar.shortMonthSymbols // "Oca", "Şub", "Mar"...
+            return (0..<6).reversed().map { i in
+                let date = calendar.date(byAdding: .month, value: -i, to: now)!
+                let monthIndex = calendar.component(.month, from: date) - 1
+                let count = historyStore.items.filter { calendar.isDate($0.date, equalTo: date, toGranularity: .month) }.count
+                return ChartData(label: monthSymbols[monthIndex], count: count)
             }
         }
     }
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(.systemGray6),
-                    Color(red: 0.96, green: 0.93, blue: 0.97)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                LinearGradient(
+                    colors: [Color(.systemGray6), Color(red: 0.96, green: 0.93, blue: 0.97)],
+                    startPoint: .top, endPoint: .bottom
+                ).ignoresSafeArea()
 
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 22) {
-                    headerSection
-                    filterSection
-                    weeklyChartSection
-
-                    if historyStore.isLoading {
-                        ProgressView("Yükleniyor...")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else if filteredItems.isEmpty {
-                        emptyStateCard
-                    } else {
-                        ForEach(filteredItems) { item in
-                            FortuneHistoryCard(item: item)
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 25) {
+                        headerSection
+                        filterSection
+                        
+                        // Dinamik Analiz Kartı
+                        dynamicChartSection
+                        
+                        if historyStore.isLoading {
+                            ProgressView("Yükleniyor...").frame(maxWidth: .infinity).padding()
+                        } else if filteredItems.isEmpty {
+                            emptyStateCard
+                        } else {
+                            fortuneSection(title: " Kahve Falların", type: .coffee)
+                            fortuneSection(title: " Tarot Açılımların", type: .tarot)
+                            fortuneSection(title: "Rüya Yorumların", type: .dream)
                         }
+                        
+                        statisticsSection
+                        Spacer(minLength: 100)
                     }
-
-                    statisticsSection
-                    Spacer(minLength: 100)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 90)
+            }
+            .sheet(item: $selectedTypeForDetail) { type in
+                AllFortunesListView(type: type, items: filteredItems.filter { $0.type == type })
             }
         }
         .onAppear {
@@ -81,25 +136,56 @@ struct HistoryView: View {
         }
     }
 
+    // --- DİNAMİK GRAFİK TASARIMI ---
+    private var dynamicChartSection: some View {
+        let stats = chartStats
+        let maxCount = stats.map { $0.count }.max() ?? 1
+        let chartHeight: CGFloat = 100
+
+        return VStack(alignment: .leading, spacing: 15) {
+            Text(selectedFilter == .today ? "Günlük Analiz" :
+                 selectedFilter == .week ? "Haftalık Analiz" :
+                 selectedFilter == .month ? "Aylık Analiz" : "Genel Analiz")
+                .font(.system(size: 18, weight: .bold))
+            
+            HStack(alignment: .bottom, spacing: 12) {
+                ForEach(stats) { stat in
+                    VStack(spacing: 8) {
+                        if stat.count > 0 {
+                            Text("\(stat.count)")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(LinearGradient(colors: [.pink, .purple], startPoint: .top, endPoint: .bottom))
+                            .frame(height: maxCount > 0 ? (CGFloat(stat.count) / CGFloat(maxCount)) * chartHeight : 5)
+                            .animation(.spring(), value: selectedFilter)
+                        
+                        Text(stat.label)
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .fixedSize()
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .padding(20)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 25))
+    }
+
     private var headerSection: some View {
         HStack {
-            Text("Fal Geçmişi")
-                .font(.system(size: 30, weight: .bold))
-
+            Text("Fal Geçmişi").font(.system(size: 30, weight: .bold))
             Spacer()
-
             Text("\(filteredItems.count) Fal")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(.white)
-                .padding(.horizontal, 18)
-                .padding(.vertical, 10)
-                .background(
-                    LinearGradient(
-                        colors: [Color.purple, Color.pink],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
+                .padding(.horizontal, 15).padding(.vertical, 8)
+                .background(Color.pink)
                 .clipShape(Capsule())
         }
     }
@@ -108,216 +194,110 @@ struct HistoryView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
                 ForEach(HistoryDateFilter.allCases, id: \.self) { filter in
-                    Button {
-                        selectedFilter = filter
-                    } label: {
+                    Button { withAnimation { selectedFilter = filter } } label: {
                         Text(filter.rawValue)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(selectedFilter == filter ? .white : .purple)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .background(
-                                selectedFilter == filter
-                                ? Color.purple
-                                : Color.white.opacity(0.95)
-                            )
+                            .padding(.horizontal, 16).padding(.vertical, 8)
+                            .background(selectedFilter == filter ? Color.purple : Color.white)
                             .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
+                    }.buttonStyle(.plain)
                 }
             }
         }
     }
 
-    private var weeklyChartSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Haftalık Fal Grafiği")
-                .font(.system(size: 22, weight: .bold))
-
-            HStack(alignment: .bottom, spacing: 10) {
-                ForEach(weeklyStats, id: \.day) { stat in
-                    VStack(spacing: 8) {
-                        Text("\(stat.count)")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(.purple)
-
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.purple, Color.pink],
-                                    startPoint: .bottom,
-                                    endPoint: .top
-                                )
-                            )
-                            .frame(height: CGFloat(max(stat.count, 1)) * 18)
-
-                        Text(stat.day)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.secondary)
+    private func fortuneSection(title: String, type: FortuneType) -> some View {
+        let allItems = filteredItems.filter { $0.type == type }
+        return VStack(alignment: .leading, spacing: 15) {
+            if !allItems.isEmpty {
+                HStack {
+                    Text(title).font(.system(size: 20, weight: .bold))
+                    Spacer()
+                    Button("Hepsini Gör") { selectedTypeForDetail = type }
+                        .font(.system(size: 14, weight: .bold)).foregroundStyle(.purple)
+                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(allItems.prefix(5)) { item in
+                            FortuneHistoryCard(item: item).frame(width: 280)
+                        }
+                        if allItems.count > 5 {
+                            Button { selectedTypeForDetail = type } label: {
+                                moreCard(count: allItems.count - 5)
+                            }
+                        }
                     }
-                    .frame(maxWidth: .infinity)
                 }
             }
-            .frame(height: 150)
-        }
-        .padding(20)
-        .background(Color.white.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
-    }
-
-    private var weeklyStats: [(day: String, count: Int)] {
-        let calendar = Calendar.current
-        let now = Date()
-
-        let weekdays = [
-            ("Pzt", 2),
-            ("Sal", 3),
-            ("Çar", 4),
-            ("Per", 5),
-            ("Cum", 6),
-            ("Cmt", 7),
-            ("Paz", 1)
-        ]
-
-        let weekItems = historyStore.items.filter {
-            calendar.isDate($0.date, equalTo: now, toGranularity: .weekOfYear)
-        }
-
-        return weekdays.map { dayName, weekdayNumber in
-            let count = weekItems.filter {
-                calendar.component(.weekday, from: $0.date) == weekdayNumber
-            }.count
-
-            return (dayName, count)
         }
     }
 
-    private var emptyStateCard: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 42))
-                .foregroundStyle(Color.gray.opacity(0.8))
-
-            Text("Bu filtrede fal bulunamadı")
-                .font(.system(size: 22, weight: .bold))
-
-            Text("Seçtiğin tarih aralığında geçmiş fal kaydı yok.")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(.gray)
-                .multilineTextAlignment(.center)
+    private func moreCard(count: Int) -> some View {
+        VStack(spacing: 10) {
+            Image(systemName: "plus.circle.fill").font(.title).foregroundStyle(.purple)
+            Text("\(count) Fal Daha").font(.subheadline).bold()
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 36)
-        .padding(.horizontal, 20)
-        .background(Color.white.opacity(0.92))
-        .clipShape(RoundedRectangle(cornerRadius: 28))
-        .shadow(color: Color.black.opacity(0.06), radius: 12, x: 0, y: 6)
+        .frame(width: 140, height: 210).background(Color.purple.opacity(0.05)).clipShape(RoundedRectangle(cornerRadius: 24))
+        .overlay(RoundedRectangle(cornerRadius: 24).strokeBorder(Color.purple.opacity(0.2), style: StrokeStyle(lineWidth: 1, dash: [5])))
     }
 
     private var statisticsSection: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            Text("İstatistikler")
-                .font(.system(size: 22, weight: .bold))
-
-            HStack {
-                statItem(count: filteredItems.filter { $0.type == .coffee }.count, title: "Kahve Falı", color: .purple)
-                Spacer()
-                statItem(count: filteredItems.filter { $0.type == .tarot }.count, title: "Tarot", color: .pink)
-                Spacer()
-                statItem(count: filteredItems.filter { $0.type == .dream }.count, title: "Rüya", color: .indigo)
-            }
+        HStack(spacing: 15) {
+            statItem(count: filteredItems.filter { $0.type == .coffee }.count, title: "Kahve", color: .orange)
+            statItem(count: filteredItems.filter { $0.type == .tarot }.count, title: "Tarot", color: .purple)
+            statItem(count: filteredItems.filter { $0.type == .dream }.count, title: "Rüya", color: .blue)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 26)
-        .background(
-            RoundedRectangle(cornerRadius: 28)
-                .fill(Color(red: 0.92, green: 0.86, blue: 0.94))
-        )
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .padding(20).background(Color.white).clipShape(RoundedRectangle(cornerRadius: 24))
     }
 
     private func statItem(count: Int, title: String, color: Color) -> some View {
-        VStack(spacing: 8) {
-            Text("\(count)")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(color)
+        VStack {
+            Text("\(count)").font(.title3).bold().foregroundStyle(color)
+            Text(title).font(.caption).bold().foregroundStyle(.secondary)
+        }.frame(maxWidth: .infinity)
+    }
 
-            Text(title)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(.secondary)
-        }
+    private var emptyStateCard: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "clock.arrow.circlepath").font(.system(size: 40)).foregroundStyle(.gray.opacity(0.5))
+            Text("Kayıt bulunamadı").font(.headline)
+        }.frame(maxWidth: .infinity).padding(.vertical, 40)
     }
 }
 
-// --- KART GÖRÜNÜMÜ ---
+// --- 3. KART GÖRÜNÜMÜ (MARKDOWN DESTEKLİ) ---
 
 struct FortuneHistoryCard: View {
     let item: FortuneHistoryItem
     @State private var showDetail = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 14) {
-                iconBox
-
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 14) {
+                LinearGradient(colors: item.type.gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing)
+                    .frame(width: 48, height: 48).clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay { Image(systemName: item.type.icon).font(.system(size: 20, weight: .bold)).foregroundStyle(.white) }
+                
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.type.displayName) // Yeni eklediğimiz displayName'i kullanıyoruz
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(Color(.label))
-
-                    Text(formattedDate(item.date))
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundStyle(.secondary)
+                    Text(item.type.displayName).font(.system(size: 18, weight: .bold))
+                    Text(formattedDate(item.date)).font(.system(size: 13, weight: .medium)).foregroundStyle(.secondary)
                 }
-
                 Spacer()
             }
 
-            Text(previewText)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Color(.label).opacity(0.88))
-                .lineSpacing(4)
-                .lineLimit(3)
+            Text(LocalizedStringKey(item.aiResponse ?? "Yorum hazırlanıyor..."))
+                .font(.system(size: 15, weight: .medium)).foregroundStyle(.secondary)
+                .lineLimit(3).frame(height: 55, alignment: .top)
 
-            Button {
-                showDetail = true
-            } label: {
-                Text("Detayları Gör")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Color(.label).opacity(0.85))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(Color(.systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
+            Button { showDetail = true } label: {
+                Text("Detayları Gör").font(.system(size: 15, weight: .bold)).foregroundStyle(.purple)
+                    .frame(maxWidth: .infinity).padding(.vertical, 12)
+                    .background(Color.purple.opacity(0.1)).clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .buttonStyle(.plain)
         }
-        .padding(24)
-        .background(Color.white.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: 30))
-        .shadow(color: Color.black.opacity(0.07), radius: 14, x: 0, y: 8)
-        .sheet(isPresented: $showDetail) {
-            FortuneDetailView(item: item)
-        }    }
-
-    private var iconBox: some View {
-        LinearGradient(
-            colors: item.type.gradientColors,
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .frame(width: 60, height: 60)
-        .clipShape(RoundedRectangle(cornerRadius: 18))
-        .overlay {
-            Image(systemName: item.type.icon)
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(.white)
-        }
-    }
-
-    private var previewText: String {
-        return item.aiResponse ?? "Yorum hazırlanıyor..."
+        .padding(20).background(Color.white).clipShape(RoundedRectangle(cornerRadius: 24)).shadow(color: .black.opacity(0.04), radius: 10, y: 5)
+        .sheet(isPresented: $showDetail) { FortuneDetailView(item: item) }
     }
 
     private func formattedDate(_ date: Date) -> String {
@@ -325,5 +305,85 @@ struct FortuneHistoryCard: View {
         formatter.locale = Locale(identifier: "tr_TR")
         formatter.dateFormat = "d MMMM yyyy HH:mm"
         return formatter.string(from: date)
+    }
+}
+
+// --- 4. HEPSİNİ GÖR LİSTESİ (SAYFALAMA İLE) ---
+
+struct AllFortunesListView: View {
+    let type: FortuneType
+    let items: [FortuneHistoryItem]
+    @State private var currentPage = 1
+    private let itemsPerPage = 10
+    
+    private var totalPages: Int {
+        let count = items.count
+        return count > 0 ? Int(ceil(Double(count) / Double(itemsPerPage))) : 1
+    }
+    
+    private var pagedItems: [FortuneHistoryItem] {
+        let startIndex = (currentPage - 1) * itemsPerPage
+        let endIndex = min(startIndex + itemsPerPage, items.count)
+        if startIndex >= items.count { return [] }
+        return Array(items[startIndex..<endIndex])
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        ForEach(pagedItems) { item in FortuneHistoryCard(item: item) }
+                    }.padding(20)
+                }
+                paginationControl
+            }
+            .navigationTitle("\(type.displayName) Geçmişi")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemGray6))
+        }
+    }
+    
+    private var paginationControl: some View {
+        VStack(spacing: 12) {
+            Divider()
+            HStack(spacing: 15) {
+                Button { if currentPage > 1 { currentPage -= 1 } } label: {
+                    Image(systemName: "chevron.left").fontWeight(.bold).padding(10)
+                        .background(currentPage > 1 ? Color.purple.opacity(0.1) : Color.clear).clipShape(Circle())
+                }.disabled(currentPage == 1)
+
+                HStack(spacing: 8) {
+                    ForEach(1...max(1, totalPages), id: \.self) { number in
+                        if shouldShowPage(number) {
+                            pageNumberButton(number)
+                        } else if number == 2 || (number == totalPages - 1 && totalPages > 5) {
+                            Text("...").font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+
+                Button { if currentPage < totalPages { currentPage += 1 } } label: {
+                    Image(systemName: "chevron.right").fontWeight(.bold).padding(10)
+                        .background(currentPage < totalPages ? Color.purple.opacity(0.1) : Color.clear).clipShape(Circle())
+                }.disabled(currentPage == totalPages)
+            }.padding(.bottom, 20).padding(.top, 5)
+        }.background(Color.white)
+    }
+
+    private func pageNumberButton(_ number: Int) -> some View {
+        Button { currentPage = number } label: {
+            Text("\(number)").font(.system(size: 14, weight: .bold)).frame(width: 35, height: 35)
+                .background(currentPage == number ? Color.purple : Color.clear)
+                .foregroundStyle(currentPage == number ? .white : .purple)
+                .clipShape(Circle()).overlay(Circle().stroke(Color.purple.opacity(0.2), lineWidth: currentPage == number ? 0 : 1))
+        }
+    }
+    
+    private func shouldShowPage(_ number: Int) -> Bool {
+        if totalPages <= 5 { return true }
+        if number == 1 || number == totalPages { return true }
+        if abs(number - currentPage) <= 1 { return true }
+        return false
     }
 }

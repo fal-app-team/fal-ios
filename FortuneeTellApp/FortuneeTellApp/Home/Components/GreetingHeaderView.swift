@@ -6,9 +6,6 @@ struct GreetingHeaderView: View {
             HStack(spacing: 8) { //elemanları yan yana dizer
                 Text("İyi günler!")
                     .font(.system(size: 26, weight: .bold))
-
-                Text("👋")
-                    .font(.system(size: 28))
             }
 
             Text("Bugün hangi yolculuğa çıkmak istersin?")

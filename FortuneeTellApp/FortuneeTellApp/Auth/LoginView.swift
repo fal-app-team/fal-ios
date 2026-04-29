@@ -7,6 +7,9 @@ struct LoginView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var navigateToHome = false
+    @AppStorage("jwtToken") private var jwtToken = ""
+    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     
     var body: some View {
         ZStack {
@@ -63,44 +66,48 @@ struct LoginView: View {
                 }
                 
                 Button(action: loginUser) {
-                                    if isLoading {
-                                        ProgressView()
-                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(Color.purple.opacity(0.7))
-                                            .cornerRadius(14)
-                                    } else {
-                                        Text("Giriş Yap")
-                                            .fontWeight(.bold)
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(
-                                                LinearGradient(
-                                                    colors: [Color.purple, Color.pink],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            )
-                                            .cornerRadius(14)
-                                            .shadow(color: .pink.opacity(0.3), radius: 8, x: 0, y: 4)
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                .disabled(isLoading || email.isEmpty || password.isEmpty)
-                                
-                            }
-                            .padding(.horizontal, 24)
-                            .padding(.vertical, 40)
-                            // iOS16+ NavigationDestination
-                            .navigationDestination(isPresented: $navigateToHome) {
-                                OnboardingFlowView()
-                            }
-                        }
-                        .alert(isPresented: $showAlert) {
-                            Alert(title: Text("Hata"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))
-                        }
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.purple.opacity(0.7))
+                            .cornerRadius(14)
+                    } else {
+                        Text("Giriş Yap")
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.purple, Color.pink],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(14)
+                            .shadow(color: .pink.opacity(0.3), radius: 8, x: 0, y: 4)
+                            .foregroundColor(.white)
                     }
+                }
+                .disabled(isLoading || email.isEmpty || password.isEmpty)
+                
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 40)
+            // iOS16+ NavigationDestination
+            .navigationDestination(isPresented: $navigateToHome) {
+                if hasCompletedOnboarding {
+                    HomeView() // Onboarding tamamlanmışsa ana sayfaya git
+                } else {
+                    OnboardingFlowView() // Tamamlanmamışsa (kayıt sonrası gibi) onboarding'e git
+                }
+            }
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Hata"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))
+        }
+    }
     
     private func loginUser() {
         isLoading = true
@@ -108,8 +115,12 @@ struct LoginView: View {
         AuthService.shared.login(request: request) { result in
             isLoading = false
             switch result {
-            case .success(_):
-                navigateToHome = true
+            case .success(let response):
+                self.jwtToken = response.token
+                self.isLoggedIn = true
+                // Backend'den gelen bilgiyi kaydet
+                self.hasCompletedOnboarding = response.onboardingCompleted
+                self.navigateToHome = true
             case .failure(let error):
                 alertMessage = error.localizedDescription
                 showAlert = true

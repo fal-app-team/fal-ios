@@ -25,6 +25,7 @@ struct LoginRequest: Codable {
 struct AuthResponse: Codable {
     let token: String
     let message: String
+    let onboardingCompleted: Bool
 }
 struct MessageResponse: Codable {
     let message: String

@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct CoffeeDetailView: View {
+    @AppStorage("jwtToken") private var jwtToken = ""
     @EnvironmentObject var historyStore: FortuneHistoryStore
     @Binding var selectedTab: TabItem
     
@@ -186,7 +187,7 @@ struct CoffeeDetailView: View {
                     }
                     .buttonStyle(.plain)
                 } else {
-                    Button {
+                    Button { 
                         selectedIndex = index
                         showPhotoLibrary = true
                     } label: {
@@ -272,24 +273,111 @@ struct CoffeeDetailView: View {
     }
     
     private func submitFortune() {
-            guard allImagesSelected else {
-                showMissingPhotosAlert = true
-                return
-            }
-            
-            isLoading = true
-            
-            // Şimdilik backend'e fotoğraf gönderme kısmını pas geçiyoruz.
-            // Sadece 1 saniye yükleniyor animasyonu gösterip geçmişe atıyoruz.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        guard allImagesSelected else {
+            showMissingPhotosAlert = true
+            return
+        }
+
+        let images = selectedImages.compactMap { $0 }
+
+        guard images.count == 3 else {
+            showMissingPhotosAlert = true
+            return
+        }
+
+        isLoading = true
+
+        uploadCoffeeFortune(images: images) { item in
+            DispatchQueue.main.async {
                 isLoading = false
-                selectedImages = [nil, nil, nil] // Resimleri temizle
-                selectedTab = .history // Geçmiş sayfasına yönlendir
+
+                if let item {
+                    historyStore.addOrUpdate(item)
+
+                    selectedImages = [nil, nil, nil]
+                    selectedTab = .history
+
+                    historyStore.fetchHistory(token: jwtToken)
+                } else {
+                    print("Kahve falı backend'e gönderilemedi veya decode edilemedi")
+                }
             }
         }
+    }
+    private func uploadCoffeeFortune(
+        images: [UIImage],
+        completion: @escaping (FortuneHistoryItem?) -> Void
+    ) {
+        guard let url = URL(string: "http://127.0.0.1:8080/api/fortunes/coffee") else {
+            completion(nil)
+            return
+        }
+       
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        print("COFFEE JWT:", jwtToken)
+        request.setValue("Bearer \(jwtToken)", forHTTPHeaderField: "Authorization")
+
+        let boundary = UUID().uuidString
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+        let fieldNames = ["cupInside", "plate", "sideAngle"]
+
+        for index in 0..<3 {
+            guard let imageData = images[index].jpegData(compressionQuality: 0.25) else {
+                completion(nil)
+                return
+            }
+
+            body.append("--\(boundary)\r\n")
+            body.append("Content-Disposition: form-data; name=\"\(fieldNames[index])\"; filename=\"coffee_\(index).jpg\"\r\n")
+            body.append("Content-Type: image/jpeg\r\n\r\n")
+            body.append(imageData)
+            body.append("\r\n")
+        }
+
+        body.append("--\(boundary)--\r\n")
+        request.httpBody = body
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error {
+                print("Coffee upload error:", error.localizedDescription)
+                completion(nil)
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Coffee upload status:", httpResponse.statusCode)
+            }
+
+            guard let data else {
+                print("Coffee upload response boş")
+                completion(nil)
+                return
+            }
+
+            print("Coffee upload response:", String(data: data, encoding: .utf8) ?? "okunamadı")
+
+            do {
+                let decoded = try JSONDecoder().decode(FortuneHistoryItem.self, from: data)
+                completion(decoded)
+            } catch {
+                print("Coffee decode error:", error)
+                completion(nil)
+            }
+        }.resume()
+    }
 }
 
 #Preview {
     CoffeeDetailView(selectedTab: .constant(.home))
         .environmentObject(FortuneHistoryStore())
+}
+extension Data {
+    mutating func append(_ string: String) {
+        if let data = string.data(using: .utf8) {
+            append(data)
+        }
+    }
 }

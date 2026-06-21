@@ -86,7 +86,7 @@ struct ContentView: View {
                         Spacer().frame(height: 40)
 
                         VStack(spacing: 10) {
-                            Text("Falcınız")
+                            Text("Bol Köpüklü")
                                 .font(.system(size: 40, weight: .heavy))
                                 .foregroundColor(.white)
 

@@ -293,11 +293,18 @@ struct CoffeeDetailView: View {
 
                 if let item {
                     historyStore.addOrUpdate(item)
+                    historyStore.fetchHistory(token: jwtToken)
+
+                    NotificationCenter.default.post(
+                        name: .fortuneHistoryShouldRefresh,
+                        object: nil
+                    )
 
                     selectedImages = [nil, nil, nil]
+
+                    // Fal bittikten sonra direkt geçmiş sayfasına yönlendir
                     selectedTab = .history
 
-                    historyStore.fetchHistory(token: jwtToken)
                 } else {
                     print("Kahve falı backend'e gönderilemedi veya decode edilemedi")
                 }

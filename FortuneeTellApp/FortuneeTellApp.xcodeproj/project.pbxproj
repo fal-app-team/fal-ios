@@ -474,7 +474,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FortuneeTellApp/Preview Content\"";
-				DEVELOPMENT_TEAM = JFF37L88VX;
+				DEVELOPMENT_TEAM = P9RX6C6M4H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortuneeTellApp/Info.plist;
@@ -490,7 +490,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.denizmetin.FortuneeTellApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aymina.FortuneeTellApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -507,7 +507,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"FortuneeTellApp/Preview Content\"";
-				DEVELOPMENT_TEAM = JFF37L88VX;
+				DEVELOPMENT_TEAM = P9RX6C6M4H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortuneeTellApp/Info.plist;
@@ -523,7 +523,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.denizmetin.FortuneeTellApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aymina.FortuneeTellApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

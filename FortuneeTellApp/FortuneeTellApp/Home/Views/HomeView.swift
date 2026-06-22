@@ -23,7 +23,6 @@ var body: some View {
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-
             Group {
                 switch selectedTab {
                 case .home:

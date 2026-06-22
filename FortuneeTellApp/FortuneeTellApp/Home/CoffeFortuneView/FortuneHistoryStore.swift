@@ -130,7 +130,7 @@ final class FortuneHistoryStore: ObservableObject {
         let item = FortuneHistoryItem(
             id: -Int(Date().timeIntervalSince1970),
             type: .coffee,
-            userInput: "Fincan İçi, Tabak ve Yan Açı fotoğrafları yüklendi.",
+            userInput: "Fincan İçi, Sağ Açı ve Sol Açı fotoğrafları yüklendi.",
             aiResponse: "Kahve falın yorumlanmak üzere alındı. Yapay zeka modeli bağlandığında gerçek yorum burada görünecek.",
             createdAt: ISO8601DateFormatter().string(from: Date())
         )

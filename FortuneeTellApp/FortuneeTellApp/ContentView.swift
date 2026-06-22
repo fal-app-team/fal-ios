@@ -182,7 +182,7 @@ struct ContentView: View {
                                     Image(systemName: "envelope")
                                         .font(.system(size: 18, weight: .semibold))
 
-                                    Text("E-mail ile Devam Et")
+                                    Text("E-mail ile Kayıt ol")
                                         .font(.system(size: 18, weight: .bold))
                                 }
                                 .foregroundColor(.white)

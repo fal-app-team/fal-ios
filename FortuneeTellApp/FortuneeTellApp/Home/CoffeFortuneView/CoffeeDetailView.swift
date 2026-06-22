@@ -15,7 +15,7 @@ struct CoffeeDetailView: View {
     @State private var showMissingPhotosAlert = false
     @State private var isLoading = false
     
-    private let photoTitles = ["Fincan İçi", "Tabak", "Yan Açı"]
+    private let photoTitles = ["Fincan İçi", "Sağ Açı", "Sol Açı"]
     
     var body: some View {
         ZStack {
@@ -87,7 +87,7 @@ struct CoffeeDetailView: View {
         .alert("Eksik fotoğraf var", isPresented: $showMissingPhotosAlert) {
             Button("Tamam", role: .cancel) { }
         } message: {
-            Text("Lütfen Fincan İçi, Tabak ve Yan Açı fotoğraflarının üçünü de yükle.")
+            Text("Lütfen Fincan İçi, Sağ Açı ve Sol Açı fotoğraflarının üçünü de yükle.")
         }
     }
     

@@ -27,7 +27,7 @@ struct RegisterView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
-                Text("Email ile Devam Et")
+                Text("Email ile Kayıt Ol")
                     .font(.largeTitle)
                     .bold()
                     .foregroundColor(.white)
